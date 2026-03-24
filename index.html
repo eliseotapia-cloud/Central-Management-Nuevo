@@ -6,7 +6,7 @@
 <title>Central Management · Latin Securities</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f0efed;color:#1a1a1a;font-size:13px;min-height:100vh;overflow-x:hidden}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f0efed;color:#1a1a1a;font-size:13px;min-height:100vh}
 
 /* TOPBAR */
 .topbar{background:#fff;border-bottom:1px solid rgba(0,0,0,.09);padding:10px 20px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:30}
@@ -148,8 +148,9 @@ tbody tr:hover .drag-handle,tbody tr:hover .wdrag-handle{opacity:1}
 .modal-footer{display:flex;gap:8px;justify-content:flex-end}
 .btn-cancel{font-size:11px;padding:6px 14px;background:none;border:1px solid rgba(0,0,0,.15);border-radius:6px;cursor:pointer;color:#888}
 .btn-save{font-size:11px;padding:6px 14px;background:#1a1a1a;color:#fff;border:none;border-radius:6px;cursor:pointer;font-weight:500}
+@keyframes spin{to{transform:rotate(360deg)}}
 
-/* MEETING NOTES */
+/* ═══ MEETING NOTES ═══ */
 .mn-toolbar{padding:14px 20px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;background:#fff;border-bottom:1px solid rgba(0,0,0,.07)}
 .mn-search{font-size:12px;padding:6px 12px;border:1px solid rgba(0,0,0,.15);border-radius:6px;background:#fff;color:#1a1a1a;width:220px;outline:none}
 .mn-search:focus{border-color:#888}
@@ -185,8 +186,838 @@ tbody tr:hover .drag-handle,tbody tr:hover .wdrag-handle{opacity:1}
 .mn-empty{text-align:center;padding:60px 20px;color:#ccc;font-size:13px}
 .mn-add-btn{display:block;width:100%;padding:12px 18px;background:none;border:1.5px dashed rgba(0,0,0,.09);border-radius:10px;font-size:13px;color:#bbb;cursor:pointer;text-align:left;font-family:inherit;margin-top:6px;transition:all .15s}
 .mn-add-btn:hover{color:#888;background:#fafafa;border-color:rgba(0,0,0,.15)}
+</style>
+</head>
+<body>
 
-/* BUBBLE WRAP */
+<div class="topbar">
+  <div class="topbar-left">
+    <img src="data:image/png;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/4gHYSUNDX1BST0ZJTEUAAQEAAAHIAAAAAAQwAABtbnRyUkdCIFhZWiAH4AABAAEAAAAAAABhY3NwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAA9tYAAQAAAADTLQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAlkZXNjAAAA8AAAACRyWFlaAAABFAAAABRnWFlaAAABKAAAABRiWFlaAAABPAAAABR3dHB0AAABUAAAABRyVFJDAAABZAAAAChnVFJDAAABZAAAAChiVFJDAAABZAAAAChjcHJ0AAABjAAAADxtbHVjAAAAAAAAAAEAAAAMZW5VUwAAAAgAAAAcAHMAUgBHAEJYWVogAAAAAAAAb6IAADj1AAADkFhZWiAAAAAAAABimQAAt4UAABjaWFlaIAAAAAAAACSgAAAPhAAAts9YWVogAAAAAAAA9tYAAQAAAADTLXBhcmEAAAAAAAQAAAACZmYAAPKnAAANWQAAE9AAAApbAAAAAAAAAABtbHVjAAAAAAAAAAEAAAAMZW5VUwAAACAAAAAcAEcAbwBvAGcAbABlACAASQBuAGMALgAgADIAMAAxADb/2wBDAAUDBAQEAwUEBAQFBQUGBwwIBwcHBw8LCwkMEQ8SEhEPERETFhwXExQaFRERGCEYGh0dHx8fExciJCIeJBweHx7/2wBDAQUFBQcGBw4ICA4eFBEUHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh7/wAARCAQABAADASIAAhEBAxEB/8QAHAABAQABBQEAAAAAAAAAAAAAAAEHAgMEBQYI/8QAThABAAECAgQICQcKBAYCAwAAAAECAwQFBhFBsiExM3Fyc4GxBxIyNDU2UWF0ExciVZGhwRQVI0JikpPR0vBDUmNkCEVTgpXhJVTC0/H/xAAcAQEAAQUBAQAAAAAAAAAAAAAAAQMEBQYHAgj/xAA8EQEAAQICBQkGBQMFAQEAAAAAAQIEAwURMTJxsQYhM0FRgZGh0RITIlJhwRQVFuHwIzRTQkNiktJUgv/aAAwDAQACEQMRAD8A+MgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA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" style="height:26px;width:auto;opacity:.85" alt="Latin Securities"><div class="tb-div"></div><div class="logo"><b>CENTRAL MANAGEMENT</b></div>
+  </div>
+  <div style="display:flex;gap:8px;align-items:center">
+    <span class="saved" id="sv"></span>
+    <button class="btn-primary" id="btn-add" onclick="addRow()">+ Nueva tarea</button>
+  </div>
+</div>
+
+<div class="motiv-bar">
+  <span class="motiv-icon" id="motiv-icon">✦</span>
+  <span class="motiv-text" id="motiv-text"></span>
+</div>
+
+<div class="switcher">
+  <button class="sw-btn active" id="sw-tasks" onclick="switchTo('tasks')">✅ Central Management</button>
+  <button class="sw-btn"        id="sw-write" onclick="switchTo('write')"><svg width="14" height="14" viewBox="0 0 24 24" fill="#25D366" style="margin-right:5px;vertical-align:middle"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>A Escribir</button>
+  <button class="sw-btn"        id="sw-free"  onclick="switchTo('free')"><svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" style="margin-right:5px;vertical-align:middle"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.746l7.733-8.835L1.254 2.25H8.08l4.26 5.632 5.905-5.632Zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>Tiempo Libre</button>
+  <button class="sw-btn"        id="sw-meet"   onclick="switchTo('meet')">📋 Reuniones</button>
+  <button class="sw-btn"        id="sw-claude" onclick="switchTo('claude')">✦ Claude</button>
+</div>
+
+<!-- ═══════════════ TASK TRACKER ═══════════════ -->
+<div id="sec-tasks">
+  <div class="filters">
+    <input type="text" id="t-search" placeholder="Buscar..." oninput="tDraw()">
+    <span class="fmode-btn on-include" id="t-btn-all"     onclick="tSetMode('all')">Todas</span>
+    <span class="fmode-btn"            id="t-btn-include" onclick="tSetMode('include')">Solo</span>
+    <span class="fmode-btn"            id="t-btn-exclude" onclick="tSetMode('exclude')">Todas menos</span>
+    <div class="divider"></div>
+    <div class="fdots" id="t-dots"></div>
+    <div id="t-tag" style="display:none"></div>
+    <span class="hint">Doble clic para editar · Arrastrar ⠿ para ordenar</span>
+  </div>
+  <div class="legend">
+    <div class="leg-item"><div class="leg-dot" style="background:#E24B4A"></div>Urgente</div>
+    <div class="leg-item"><div class="leg-dot" style="background:#EF9F27"></div>En proceso</div>
+    <div class="leg-item"><div class="leg-dot" style="background:#378ADD"></div>Esperando</div>
+    <div class="leg-item"><div class="leg-dot" style="background:#639922"></div>Listo / OK</div>
+    <div class="leg-item"><div class="leg-dot" style="background:#888"></div>Cerrado</div>
+    <div class="leg-item"><div class="leg-dot" style="background:#d4d4d4"></div>Sin estado</div>
+  </div>
+  <div class="main">
+    <table>
+      <thead><tr>
+        <th class="t-col-drag"></th><th class="t-col-dot"></th>
+        <th class="t-col-title">Título</th>
+        <th class="t-col-desc">Descripción</th>
+        <th class="t-col-upd">Estado / Seguimiento</th>
+        <th class="t-col-date" style="text-align:center">Creado</th>
+        <th class="t-col-del"></th>
+      </tr></thead>
+      <tbody id="t-body"></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ═══════════════ A ESCRIBIR ═══════════════ -->
+<div id="sec-write" style="display:none">
+  <div class="filters">
+    <input type="text" id="w-search" placeholder="Buscar..." oninput="wDraw()">
+    <span class="fmode-btn on-include" id="w-btn-all"     onclick="wSetMode('all')">Todas</span>
+    <span class="fmode-btn"            id="w-btn-include" onclick="wSetMode('include')">Solo</span>
+    <span class="fmode-btn"            id="w-btn-exclude" onclick="wSetMode('exclude')">Todas menos</span>
+    <div class="divider"></div>
+    <div class="fdots" id="w-dots"></div>
+    <div id="w-tag" style="display:none"></div>
+    <span class="hint">Doble clic para editar</span>
+  </div>
+  <div class="legend">
+    <div class="leg-item"><div class="leg-dot" style="background:#E24B4A"></div>Urgente</div>
+    <div class="leg-item"><div class="leg-dot" style="background:#EF9F27"></div>En proceso</div>
+    <div class="leg-item"><div class="leg-dot" style="background:#378ADD"></div>Esperando</div>
+    <div class="leg-item"><div class="leg-dot" style="background:#639922"></div>Listo / OK</div>
+    <div class="leg-item"><div class="leg-dot" style="background:#888"></div>Cerrado</div>
+  </div>
+  <div class="main">
+    <table>
+      <thead><tr>
+        <th class="w-col-drag"></th><th class="w-col-dot"></th>
+        <th class="w-col-name">Nombre</th>
+        <th class="w-col-topic">Tema</th>
+        <th class="w-col-del"></th>
+      </tr></thead>
+      <tbody id="w-body"></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ═══════════════ TIEMPO LIBRE ═══════════════ -->
+<div id="sec-free" style="display:none">
+  <div class="filters">
+    <input type="text" id="f-search" placeholder="Buscar..." oninput="fDraw()">
+    <span class="fmode-btn on-include" id="f-btn-all"     onclick="fSetMode('all')">Todas</span>
+    <span class="fmode-btn"            id="f-btn-include" onclick="fSetMode('include')">Solo</span>
+    <span class="fmode-btn"            id="f-btn-exclude" onclick="fSetMode('exclude')">Todas menos</span>
+    <div class="divider"></div>
+    <div class="fdots" id="f-dots"></div>
+    <div id="f-tag" style="display:none"></div>
+    <span class="hint">Doble clic en título · Clic en link para abrir</span>
+  </div>
+  <div class="legend">
+    <div class="leg-item"><div class="leg-dot" style="background:#E24B4A"></div>Pendiente leer</div>
+    <div class="leg-item"><div class="leg-dot" style="background:#EF9F27"></div>Leyendo</div>
+    <div class="leg-item"><div class="leg-dot" style="background:#378ADD"></div>Interesante</div>
+    <div class="leg-item"><div class="leg-dot" style="background:#639922"></div>Leído</div>
+    <div class="leg-item"><div class="leg-dot" style="background:#888"></div>Descartado</div>
+  </div>
+  <div class="main">
+    <table>
+      <thead><tr>
+        <th class="f-col-drag"></th><th class="f-col-dot"></th>
+        <th class="f-col-title">Título / Descripción</th>
+        <th class="f-col-link">Link</th>
+        <th class="f-col-del"></th>
+      </tr></thead>
+      <tbody id="f-body"></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ═══════════════ REUNIONES ═══════════════ -->
+<div id="sec-meet" style="display:none">
+  <div style="padding:16px 20px 0;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px">
+    <div>
+      <div style="font-size:15px;font-weight:700;color:#1a1a1a;margin-bottom:2px">📋 Notas de Reuniones</div>
+      <div style="font-size:11px;color:#bbb">Tu base de datos de reuniones, ordenada por fecha.</div>
+    </div>
+    <button class="btn-primary" onclick="mAddMeeting()" style="font-size:11px;padding:5px 13px">+ Nueva reunión</button>
+  </div>
+
+  <!-- FOLDER PILLS -->
+  <div style="padding:12px 20px 0;display:flex;gap:8px;flex-wrap:wrap" id="m-folders"></div>
+
+  <!-- TOOLBAR: SEARCH + DATE FILTER -->
+  <div class="mn-toolbar">
+    <input type="text" class="mn-search" id="m-search" placeholder="Buscar por título, participantes o notas..." oninput="mDraw()">
+    <div class="divider"></div>
+    <span style="font-size:10px;color:#aaa;font-weight:500">DESDE</span>
+    <input type="date" class="mn-date-input" id="m-date-from" onchange="mDraw()">
+    <span style="font-size:10px;color:#aaa;font-weight:500">HASTA</span>
+    <input type="date" class="mn-date-input" id="m-date-to" onchange="mDraw()">
+    <button onclick="mClearDates()" style="font-size:10px;color:#764ba2;background:none;border:none;cursor:pointer;font-weight:500;padding:3px 8px;border-radius:4px" onmouseenter="this.style.background='rgba(118,75,162,.08)'" onmouseleave="this.style.background='none'">Limpiar fechas</button>
+    <span class="hint" style="margin-left:auto" id="m-count"></span>
+  </div>
+
+  <!-- MEETING CARDS -->
+  <div class="main" style="padding:16px 20px">
+    <div class="mn-cards" id="m-list"></div>
+  </div>
+</div>
+
+<!-- ═══════════════ CLAUDE ═══════════════ -->
+<div id="sec-claude" style="display:none">
+  <div style="padding:20px 20px 0;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px">
+    <div>
+      <div style="font-size:15px;font-weight:700;color:#1a1a1a;margin-bottom:2px">✦ Ideas &amp; usos de Claude</div>
+      <div style="font-size:11px;color:#bbb">Tu diario personal de prompts, ideas y casos de uso.</div>
+    </div>
+    <button class="btn-primary" onclick="nAddCard()" style="font-size:11px;padding:5px 13px">+ Nueva nota</button>
+  </div>
+
+  <!-- CATEGORÍAS -->
+  <div style="padding:12px 20px 0;display:flex;gap:8px;flex-wrap:wrap" id="n-cats"></div>
+
+  <!-- CARDS GRID -->
+  <div class="main" style="padding:16px 20px">
+    <div id="n-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px"></div>
+  </div>
+</div>
+
+<div id="picker-float">
+  <div class="pk-title">Estado</div>
+  <div id="pk-opts"></div>
+</div>
+
+<div id="modal-root"></div>
+
+<script>
+const COLS=['none','red','amber','blue','green','gray'];
+const DC={none:'dot-none',red:'dot-red',amber:'dot-amber',blue:'dot-blue',green:'dot-green',gray:'dot-gray'};
+const RC={none:'',red:'row-red',amber:'row-amber',blue:'row-blue',green:'row-green',gray:'row-gray'};
+const CL={none:'Sin estado',red:'Urgente',amber:'En proceso',blue:'Esperando',green:'Listo / OK',gray:'Cerrado'};
+const DOTBG={none:'#d4d4d4',red:'#E24B4A',amber:'#EF9F27',blue:'#378ADD',green:'#639922',gray:'#888'};
+
+function xe(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
+function as(el){el.style.height='auto';el.style.height=Math.max(36,el.scrollHeight)+'px'}
+function today(){return new Date().toISOString().slice(0,10)}
+function fmtDate(s){if(!s)return'—';const[,m,d]=s.split('-');return`${parseInt(d)} ${['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'][parseInt(m)-1]}`}
+function showSaved(){const el=document.getElementById('sv');if(el){el.textContent='✓ Guardado';clearTimeout(el._t);el._t=setTimeout(()=>el.textContent='',2000)}}
+
+const PHRASES=[
+  {t:"El campeón se hace en los momentos en que ya no puede más, pero sigue. — Muhammad Ali",i:"🔥"},
+  {t:"Tu tiempo es limitado. No lo malgastes viviendo la vida de otro. — Steve Jobs",i:"🔥"},
+  {t:"En los negocios, lo que hace grande a una empresa es la obsesión por el cliente, no por la competencia. — Jeff Bezos",i:"🔥"},
+  {t:"Siempre parece imposible hasta que se hace. — Nelson Mandela",i:"🔥"},
+  {t:"No he fracasado. Solo he encontrado 10.000 formas que no funcionan. — Thomas Edison",i:"🔥"},
+  {t:"El éxito no es definitivo, el fracaso no es fatal. Lo que cuenta es el coraje de continuar. — Winston Churchill",i:"🔥"},
+  {t:"Si puedes soñarlo, puedes hacerlo. — Walt Disney",i:"🔥"},
+  {t:"La única forma de hacer un gran trabajo es amar lo que hacés. — Steve Jobs",i:"🔥"},
+  {t:"Trabaja duro en silencio. Deja que el éxito haga el ruido. — Frank Ocean",i:"🔥"},
+  {t:"El dolor es temporal. Rendirse es para siempre. — Kobe Bryant",i:"🔥"},
+  {t:"La diferencia entre lo ordinario y lo extraordinario es ese pequeño extra. — Jimmy Johnson",i:"🔥"},
+  {t:"Los ganadores nunca se rinden y los que se rinden nunca ganan. — Vince Lombardi",i:"🔥"},
+  {t:"Prefiero arrepentirme de las cosas que hice a las que no hice. — Jeff Bezos",i:"🔥"},
+  {t:"Si no estás avergonzado del primer producto que lanzaste, lo lanzaste tarde. — Reid Hoffman",i:"🔥"},
+  {t:"No cuentes los días, hacé que los días cuenten. — Muhammad Ali",i:"🔥"},
+];
+function motivUpdate(anim){
+  const el=document.getElementById('motiv-text'),ic=document.getElementById('motiv-icon');
+  if(!el||!ic)return;
+  const now=new Date(),block=Math.floor((now.getHours()*60+now.getMinutes())/45);
+  const p=PHRASES[block%PHRASES.length];
+  if(!anim){el.textContent=p.t;ic.textContent=p.i;return}
+  el.classList.add('fade-out');
+  setTimeout(()=>{el.textContent=p.t;ic.textContent=p.i;el.classList.remove('fade-out');el.classList.add('fade-in');requestAnimationFrame(()=>requestAnimationFrame(()=>el.classList.remove('fade-in')))},500);
+}
+motivUpdate(false);
+setInterval(()=>motivUpdate(true),45*60*1000);
+
+let currentSection='tasks';
+const SECTIONS=['tasks','write','free','meet','claude'];
+const ADD_LABELS={tasks:'+ Nueva tarea',write:'+ Agregar persona',free:'+ Agregar link',meet:'+ Nueva reunión',claude:'+ Nueva nota'};
+const ADD_FNS={tasks:()=>tAddRow(),write:()=>wAddRow(),free:()=>fAddRow(),meet:()=>mAddMeeting(),claude:()=>nAddCard()};
+function switchTo(s){
+  currentSection=s;
+  SECTIONS.forEach(x=>{
+    document.getElementById('sec-'+x).style.display=x===s?'':'none';
+    document.getElementById('sw-'+x).classList.toggle('active',x===s);
+  });
+  document.getElementById('btn-add').textContent=ADD_LABELS[s];
+  if(s==='tasks')tDraw();
+  if(s==='write')wDraw();
+  if(s==='free')fDraw();
+  if(s==='meet')mDraw();
+  if(s==='claude')nDraw();
+}
+document.getElementById('btn-add').onclick=()=>ADD_FNS[currentSection]();
+
+function makeFilterState(prefix,drawFn,fields){
+  const state={mode:'all',color:null};
+  function setMode(m){state.mode=m;if(m==='all')state.color=null;updateUI();drawFn()}
+  function dotClick(c){
+    if(state.mode==='all'){state.mode='include';state.color=c}
+    else if(state.mode==='include'){state.color=state.color===c?null:c;if(!state.color)state.mode='all'}
+    else if(state.mode==='exclude'){state.color=state.color===c?null:c;if(!state.color)state.mode='all'}
+    updateUI();drawFn();
+  }
+  function updateUI(){
+    const btnAll=document.getElementById(prefix+'-btn-all');
+    const btnInc=document.getElementById(prefix+'-btn-include');
+    const btnExc=document.getElementById(prefix+'-btn-exclude');
+    if(btnAll)btnAll.className='fmode-btn'+(state.mode==='all'?' on-include':'');
+    if(btnInc)btnInc.className='fmode-btn'+(state.mode==='include'&&state.color?' on-include':'');
+    if(btnExc)btnExc.className='fmode-btn'+(state.mode==='exclude'&&state.color?' on-exclude':'');
+    const dotsEl=document.getElementById(prefix+'-dots');
+    if(dotsEl){
+      dotsEl.innerHTML=COLS.map(c=>{
+        let cls='fdot '+DC[c];
+        if(state.color===c){cls+=state.mode==='include'?' sel-include':' sel-exclude'}
+        return`<div class="${cls}" onclick="${prefix}Filter.dotClick('${c}')" title="${CL[c]}"></div>`;
+      }).join('');
+    }
+    const tag=document.getElementById(prefix+'-tag');
+    if(tag){
+      if(state.color&&state.mode!=='all'){
+        tag.style.display='flex';
+        tag.innerHTML=`<div class="filter-tag"><div class="ftdot" style="background:${DOTBG[state.color]}"></div><span>${state.mode==='include'?'Solo: '+CL[state.color]:'Ocultando: '+CL[state.color]}</span><span class="ft-x" onclick="${prefix}Filter.setMode('all')">✕</span></div>`;
+      } else {tag.style.display='none';tag.innerHTML=''}
+    }
+  }
+  function apply(rows){
+    const s=(document.getElementById(prefix+'-search')?.value||'').toLowerCase();
+    return rows.filter(r=>{
+      if(state.mode==='include'&&state.color&&r.c!==state.color)return false;
+      if(state.mode==='exclude'&&state.color&&r.c===state.color)return false;
+      if(s&&!fields(r).some(v=>(v||'').toLowerCase().includes(s)))return false;
+      return true;
+    });
+  }
+  updateUI();
+  return {setMode,dotClick,apply,updateUI};
+}
+
+const pfloat=document.getElementById('picker-float');
+const popts=document.getElementById('pk-opts');
+let activePkId=null;
+function showPicker(dotEl,onSelect){
+  activePkId=dotEl.id;
+  popts.innerHTML=COLS.map(c=>`<div class="pk-opt" data-c="${c}"><div class="pk-dot" style="background:${DOTBG[c]}"></div><span class="pk-label">${CL[c]}</span></div>`).join('');
+  popts.querySelectorAll('.pk-opt').forEach(o=>o.addEventListener('mousedown',e=>{e.preventDefault();e.stopPropagation();onSelect(o.dataset.c);hidePicker()}));
+  pfloat.classList.add('visible');
+  const r=dotEl.getBoundingClientRect();
+  let top=r.bottom+6,left=r.left;
+  if(left+180>window.innerWidth-8)left=window.innerWidth-188;
+  if(top+230>window.innerHeight-8)top=r.top-236;
+  pfloat.style.top=top+'px';pfloat.style.left=left+'px';
+}
+function hidePicker(){activePkId=null;pfloat.classList.remove('visible')}
+document.addEventListener('mousedown',e=>{if(activePkId&&!pfloat.contains(e.target))hidePicker()});
+
+function makeDrag(getData,setData,saveFn,drawFn,rowPrefix){
+  let dragId=null,overIdx=null;
+  return{
+    start(e,id){dragId=id;e.dataTransfer.effectAllowed='move';setTimeout(()=>document.getElementById(rowPrefix+id)?.classList.add('dragging'),0)},
+    over(e,id){e.preventDefault();if(overIdx!==id){document.querySelectorAll('tr.drag-over').forEach(r=>r.classList.remove('drag-over'));overIdx=id;document.getElementById(rowPrefix+id)?.classList.add('drag-over')}},
+    leave(e,id){if(!e.currentTarget.contains(e.relatedTarget)){document.getElementById(rowPrefix+id)?.classList.remove('drag-over');if(overIdx===id)overIdx=null}},
+    drop(e,tid){
+      e.preventDefault();
+      const D=getData();
+      if(!dragId||dragId===tid){this.end();return}
+      const fi=D.findIndex(r=>r.id===dragId),ti=D.findIndex(r=>r.id===tid);
+      if(fi<0||ti<0){this.end();return}
+      const[m]=D.splice(fi,1);D.splice(ti,0,m);setData(D);saveFn();this.end();drawFn();
+    },
+    end(){dragId=null;overIdx=null;document.querySelectorAll('tr.dragging,tr.drag-over').forEach(r=>r.classList.remove('dragging','drag-over'))}
+  };
+}
+
+function makeEditor(prefix,getData,saveFn,drawFn,fieldsList){
+  let ed=null;
+  function startEd(id,f){ed={id,f};drawFn()}
+  function commit(id,f,val){const r=getData().find(x=>x.id===id);if(r){r[f]=val;saveFn()}if(ed&&ed.id===id&&ed.f===f)ed=null;drawFn()}
+  function kd(e,id,f){
+    as(e.target);
+    if(e.key==='Escape'){ed=null;drawFn();return}
+    const goNext=(e.key==='Tab'&&!e.shiftKey)||(e.key==='Enter'&&!e.shiftKey);
+    const goPrev=e.key==='Tab'&&e.shiftKey;
+    if(!goNext&&!goPrev)return;
+    e.preventDefault();
+    const val=e.target.value,row=getData().find(x=>x.id===id);if(row)row[f]=val;
+    const list=window[prefix+'Filter'].apply(getData());
+    const fs=fieldsList,i=fs.indexOf(f),ri=list.findIndex(x=>x.id===id);
+    if(goNext){
+      if(i<fs.length-1)ed={id,f:fs[i+1]};
+      else if(ri<list.length-1)ed={id:list[ri+1].id,f:fs[0]};
+      else{ed=null;saveFn();drawFn();return}
+    } else {
+      if(i>0)ed={id,f:fs[i-1]};
+      else if(ri>0)ed={id:list[ri-1].id,f:fs[fs.length-1]};
+      else ed=null;
+    }
+    saveFn();drawFn();
+  }
+  function focusEd(id,f){const el=document.getElementById(`${prefix}-ed-${id}-${f}`);if(el){el.focus();try{const l=el.value.length;el.setSelectionRange(l,l)}catch{}as(el)}}
+  function get(){return ed}
+  return{startEd,commit,kd,focusEd,get};
+}
+
+const T_SK='tt_v9';
+let T=tLoad()||[
+  {id:1,c:'red',   t:'Migración base de datos',       d:'Pasar de MySQL a Postgres en staging. Validar datos críticos antes del corte.',u:'Completada migración de tablas usuarios. Pendiente validar tablas de auditoría con Bruno.',cr:'2026-03-10'},
+  {id:2,c:'amber', t:'Brief campaña Q2',               d:'Definir objetivos, audiencias y presupuesto para campaña de abril.',u:'Reunión agendada con agencia para el viernes. Clara trae propuesta de segmentación.',cr:'2026-03-11'},
+  {id:3,c:'blue',  t:'Revisión contratos proveedores', d:'Actualizar cláusulas según nuevo marco regulatorio.',u:'Enviado a estudio externo. A la espera de respuesta — se pidió prioridad en cláusulas.',cr:'2026-03-11'},
+  {id:4,c:'green', t:'Onboarding nuevo dev',            d:'Configurar accesos y presentar stack técnico.',u:'Completado — todos los accesos configurados y primer PR aprobado.',cr:'2026-03-08'},
+  {id:5,c:'amber', t:'Rediseño landing page',           d:'Nuevo hero y sección de precios. Coordinar copy con Clara.',u:'Mockups v2 listos para revisión. Incorporados cambios del feedback.',cr:'2026-03-12'},
+  {id:6,c:'gray',  t:'OKRs Q1',                        d:'Workshop completado con todos los leads.',u:'Cerrado — OKRs definidos y comunicados.',cr:'2026-03-01'},
+  {id:7,c:'none',  t:'Definir OKRs Q2',                d:'Workshop con leads de cada área. Reservar 2hs de bloque.',u:'',cr:'2026-03-13'},
+];
+let T_nid=Math.max(...T.map(r=>r.id),0)+1;
+function tLoad(){try{const d=localStorage.getItem(T_SK);return d?JSON.parse(d):null}catch{return null}}
+function tSave(){try{localStorage.setItem(T_SK,JSON.stringify(T))}catch{}showSaved()}
+
+window.tFilter=makeFilterState('t',tDraw,r=>[r.t,r.d,r.u]);
+const tDrag=makeDrag(()=>T,d=>T=d,tSave,tDraw,'t-row-');
+const tEd=makeEditor('t',()=>T,tSave,tDraw,['t','d','u']);
+
+function tDraw(){
+  const list=tFilter.apply(T);
+  const tbody=document.getElementById('t-body');if(!tbody)return;
+  tbody.innerHTML=list.map(r=>{
+    const ted=tEd.get();
+    const flds=[{f:'t',cls:'t-col-title',ph:'Título...'},{f:'d',cls:'t-col-desc',ph:'Descripción...'},{f:'u',cls:'t-col-upd',ph:'Estado actual...'}];
+    const cells=flds.map(({f,cls,ph})=>{
+      const isEd=ted&&ted.id===r.id&&ted.f===f,val=r[f]||'';
+      if(isEd)return`<td class="${cls}"><textarea class="cell-ed" id="t-ed-${r.id}-${f}" onblur="tEd.commit(${r.id},'${f}',this.value)" onkeydown="tEd.kd(event,${r.id},'${f}')" oninput="as(this)">${xe(val)}</textarea></td>`;
+      return`<td class="${cls}"><div class="cell-view${val?'':' cell-empty'}" ondblclick="tEd.startEd(${r.id},'${f}')">${val?xe(val):ph}</div></td>`;
+    }).join('');
+    return`<tr class="${RC[r.c]||''}" id="t-row-${r.id}" draggable="true" ondragstart="tDrag.start(event,${r.id})" ondragover="tDrag.over(event,${r.id})" ondragleave="tDrag.leave(event,${r.id})" ondrop="tDrag.drop(event,${r.id})" ondragend="tDrag.end()">
+      <td class="t-col-drag"><div class="drag-handle">⠿</div></td>
+      <td class="t-col-dot"><div class="dot-wrap"><div class="dot-btn ${DC[r.c]}" id="t-dot-${r.id}" onclick="showPicker(this,c=>{T.find(x=>x.id===${r.id}).c=c;tSave();tDraw()})"></div></div></td>
+      ${cells}
+      <td class="t-col-date"><div class="date-cell"><span class="date-lbl">Creado</span>${fmtDate(r.cr)}</div></td>
+      <td class="t-col-del"><button class="btn-del" onclick="tDel(${r.id})">✕</button></td>
+    </tr>`;
+  }).join('')+`<tr class="addrow"><td colspan="7"><button class="addbtn" onclick="tAddRow()">＋ Nueva tarea</button></td></tr>`;
+  const ted=tEd.get();if(ted)setTimeout(()=>tEd.focusEd(ted.id,ted.f),10);
+}
+function tAddRow(){const r={id:T_nid++,c:'none',t:'',d:'',u:'',cr:today()};T.push(r);tSave();tEd.startEd(r.id,'t');tDraw();setTimeout(()=>document.getElementById('t-row-'+r.id)?.scrollIntoView({behavior:'smooth',block:'nearest'}),60)}
+function tDel(id){if(!confirm('¿Eliminar?'))return;T=T.filter(r=>r.id!==id);tSave();tDraw()}
+
+const W_SK='tt_write_v2';
+let W=wLoad()||[
+  {id:1,c:'red',   name:'Matías López', topic:'Pedirle documentos de auditoría — llevan 3 días de demora'},
+  {id:2,c:'amber', name:'Clara Ruiz',   topic:'Confirmar reunión con la agencia para el viernes'},
+  {id:3,c:'blue',  name:'Bruno Soto',   topic:'¿Cómo va la migración de Postgres? ¿Cuándo termina?'},
+  {id:4,c:'none',  name:'Eva Molina',   topic:'Consultar estado del estudio externo con los contratos'},
+  {id:5,c:'none',  name:'Diego Paz',    topic:'Recordarle el workshop de OKRs Q2'},
+];
+let W_nid=Math.max(...W.map(r=>r.id),0)+1;
+function wLoad(){try{const d=localStorage.getItem(W_SK);return d?JSON.parse(d):null}catch{return null}}
+function wSave(){try{localStorage.setItem(W_SK,JSON.stringify(W))}catch{}showSaved()}
+
+window.wFilter=makeFilterState('w',wDraw,r=>[r.name,r.topic]);
+const wDrag=makeDrag(()=>W,d=>W=d,wSave,wDraw,'w-row-');
+const wEd=makeEditor('w',()=>W,wSave,wDraw,['name','topic']);
+
+function wDraw(){
+  const list=wFilter.apply(W);
+  const tbody=document.getElementById('w-body');if(!tbody)return;
+  tbody.innerHTML=list.map(r=>{
+    const wed=wEd.get();
+    const flds=[{f:'name',cls:'w-col-name',ph:'Nombre...'},{f:'topic',cls:'w-col-topic',ph:'Tema...'}];
+    const cells=flds.map(({f,cls,ph})=>{
+      const isEd=wed&&wed.id===r.id&&wed.f===f,val=r[f]||'';
+      if(isEd)return`<td class="${cls}"><textarea class="cell-ed" id="w-ed-${r.id}-${f}" onblur="wEd.commit(${r.id},'${f}',this.value)" onkeydown="wEd.kd(event,${r.id},'${f}')" oninput="as(this)">${xe(val)}</textarea></td>`;
+      return`<td class="${cls}"><div class="cell-view${val?'':' cell-empty'}" ondblclick="wEd.startEd(${r.id},'${f}')">${val?xe(val):ph}</div></td>`;
+    }).join('');
+    return`<tr class="${RC[r.c]||''}" id="w-row-${r.id}" draggable="true" ondragstart="wDrag.start(event,${r.id})" ondragover="wDrag.over(event,${r.id})" ondragleave="wDrag.leave(event,${r.id})" ondrop="wDrag.drop(event,${r.id})" ondragend="wDrag.end()">
+      <td class="w-col-drag"><div class="wdrag-handle">⠿</div></td>
+      <td class="w-col-dot"><div class="wdot-wrap"><div class="dot-btn ${DC[r.c]}" id="w-dot-${r.id}" onclick="showPicker(this,c=>{W.find(x=>x.id===${r.id}).c=c;wSave();wDraw()})"></div></div></td>
+      ${cells}
+      <td class="w-col-del"><button class="wbtn-del" onclick="wDel(${r.id})">✕</button></td>
+    </tr>`;
+  }).join('')+`<tr class="addrow"><td colspan="5"><button class="waddbtn" onclick="wAddRow()">＋ Agregar persona</button></td></tr>`;
+  const wed=wEd.get();if(wed)setTimeout(()=>wEd.focusEd(wed.id,wed.f),10);
+}
+function wAddRow(){const r={id:W_nid++,c:'none',name:'',topic:''};W.push(r);wSave();wEd.startEd(r.id,'name');wDraw();setTimeout(()=>document.getElementById('w-row-'+r.id)?.scrollIntoView({behavior:'smooth',block:'nearest'}),60)}
+function wDel(id){if(!confirm('¿Eliminar?'))return;W=W.filter(r=>r.id!==id);wSave();wDraw()}
+
+const F_SK='tt_free_v1';
+let F=fLoad()||[
+  {id:1,c:'red',   title:'Thread sobre tasas Fed y mercados EM',link:'https://twitter.com/example/status/1',note:'Importante para el research de renta fija'},
+  {id:2,c:'amber', title:'Research JPMorgan — Latam Equities Q1',link:'https://twitter.com/example/status/2',note:'Leer antes de la reunión del jueves'},
+  {id:3,c:'blue',  title:'Análisis macro Argentina 2026',link:'https://twitter.com/example/status/3',note:''},
+  {id:4,c:'none',  title:'Podcast sobre gestión de portafolios',link:'https://twitter.com/example/status/4',note:'Recomendado por Diego'},
+];
+let F_nid=Math.max(...F.map(r=>r.id),0)+1;
+function fLoad(){try{const d=localStorage.getItem(F_SK);return d?JSON.parse(d):null}catch{return null}}
+function fSave(){try{localStorage.setItem(F_SK,JSON.stringify(F))}catch{}showSaved()}
+
+window.fFilter=makeFilterState('f',fDraw,r=>[r.title,r.note,r.link]);
+const fDrag=makeDrag(()=>F,d=>F=d,fSave,fDraw,'f-row-');
+const fEd=makeEditor('f',()=>F,fSave,fDraw,['title']);
+
+function fDraw(){
+  const list=fFilter.apply(F);
+  const tbody=document.getElementById('f-body');if(!tbody)return;
+  tbody.innerHTML=list.map(r=>{
+    const fed=fEd.get();
+    const isEdTitle=fed&&fed.id===r.id&&fed.f==='title';
+    const titleCell=isEdTitle
+      ?`<td class="f-col-title"><textarea class="cell-ed" id="f-ed-${r.id}-title" style="padding:13px 14px;font-size:14px;min-height:48px;font-weight:600" onblur="fEd.commit(${r.id},'title',this.value)" onkeydown="fEd.kd(event,${r.id},'title')" oninput="as(this)">${xe(r.title)}</textarea></td>`
+      :`<td class="f-col-title"><div class="cell-view${r.title?'':' cell-empty'}" style="padding:13px 14px;font-size:14px;font-weight:600;min-height:48px" ondblclick="fEd.startEd(${r.id},'title')">${r.title?xe(r.title):'Título...'}</div></td>`;
+
+    const linkDisplay=r.link
+      ?`<a href="${xe(r.link)}" target="_blank" rel="noopener">${xe(r.link.length>60?r.link.slice(0,60)+'…':r.link)}</a>${r.note?`<div class="link-note">${xe(r.note)}</div>`:''}`
+      :`<span style="color:#d0d0d0">Link...</span>`;
+
+    return`<tr class="${RC[r.c]||''}" id="f-row-${r.id}" draggable="true" ondragstart="fDrag.start(event,${r.id})" ondragover="fDrag.over(event,${r.id})" ondragleave="fDrag.leave(event,${r.id})" ondrop="fDrag.drop(event,${r.id})" ondragend="fDrag.end()">
+      <td class="f-col-drag"><div class="wdrag-handle">⠿</div></td>
+      <td class="f-col-dot"><div class="wdot-wrap"><div class="dot-btn ${DC[r.c]}" id="f-dot-${r.id}" onclick="showPicker(this,c=>{F.find(x=>x.id===${r.id}).c=c;fSave();fDraw()})"></div></div></td>
+      ${titleCell}
+      <td class="f-col-link"><div class="link-view${r.link?'':' empty'}" ondblclick="openLinkModal(${r.id})">${linkDisplay}</div></td>
+      <td class="f-col-del"><button class="wbtn-del" onclick="fDel(${r.id})">✕</button></td>
+    </tr>`;
+  }).join('')+`<tr class="addrow"><td colspan="5"><button class="waddbtn" onclick="fAddRow()">＋ Agregar link</button></td></tr>`;
+  const fed=fEd.get();if(fed)setTimeout(()=>fEd.focusEd(fed.id,fed.f),10);
+}
+
+function openLinkModal(id){
+  const r=F.find(x=>x.id===id);if(!r)return;
+  document.getElementById('modal-root').innerHTML=`<div class="modal-bg" onclick="if(event.target===this)closeLinkModal()">
+    <div class="modal">
+      <h3>Editar link</h3>
+      <label>Título</label>
+      <input type="text" id="lm-title" value="${xe(r.title)}" placeholder="Título o descripción...">
+      <label>Link (Twitter, URL, etc.)</label>
+      <input type="url" id="lm-link" value="${xe(r.link)}" placeholder="https://twitter.com/...">
+      <label>Nota (opcional)</label>
+      <textarea id="lm-note" placeholder="Contexto, para qué querés leerlo...">${xe(r.note)}</textarea>
+      <div class="modal-footer">
+        <button class="btn-cancel" onclick="closeLinkModal()">Cancelar</button>
+        <button class="btn-save" onclick="saveLinkModal(${id})">Guardar</button>
+      </div>
+    </div>
+  </div>`;
+  setTimeout(()=>document.getElementById('lm-title')?.focus(),50);
+}
+function closeLinkModal(){document.getElementById('modal-root').innerHTML=''}
+function saveLinkModal(id){
+  const r=F.find(x=>x.id===id);if(!r)return;
+  r.title=document.getElementById('lm-title').value.trim();
+  r.link=document.getElementById('lm-link').value.trim();
+  r.note=document.getElementById('lm-note').value.trim();
+  fSave();closeLinkModal();fDraw();
+}
+function fAddRow(){
+  const r={id:F_nid++,c:'none',title:'',link:'',note:''};
+  F.push(r);fSave();fDraw();
+  setTimeout(()=>{
+    document.getElementById('f-row-'+r.id)?.scrollIntoView({behavior:'smooth',block:'nearest'});
+    openLinkModal(r.id);
+  },80);
+}
+function fDel(id){if(!confirm('¿Eliminar?'))return;F=F.filter(r=>r.id!==id);fSave();fDraw()}
+
+window.tSetMode=m=>window.tFilter.setMode(m);
+window.wSetMode=m=>window.wFilter.setMode(m);
+window.fSetMode=m=>window.fFilter.setMode(m);
+
+// ═══════════════════════════════════════════════════════════════
+// REUNIONES — MEETING NOTES
+// ═══════════════════════════════════════════════════════════════
+const M_SK='tt_meet_v1';
+const M_FOLDERS=['Equipo','Clientes','Board','1:1','Estrategia','Research','Otro'];
+const M_FOLDER_COLORS={Equipo:'#1a3a8f',Clientes:'#0e7490','Board':'#7c3aed','1:1':'#059669',Estrategia:'#d97706',Research:'#dc2626',Otro:'#666'};
+let M_activefolder='Todas';
+let M_openCards={};
+
+const DEFAULT_MEETINGS=[
+  {id:1,folder:'Equipo',title:'Kick-off sprint Q2',date:'2026-03-20',people:'Matías, Clara, Bruno, Diego',notes:'Definimos prioridades del sprint:\n- Migración DB: completar validación\n- Landing page: entregar mockup final\n- Onboarding: documentar proceso\n\nAcción: Bruno manda timeline el lunes. Clara confirma con agencia.'},
+  {id:2,folder:'Clientes',title:'Review portfolio Familia Méndez',date:'2026-03-19',people:'Juan Méndez, Eva Molina',notes:'Revisión del portfolio de renta fija.\nPiden rotar parte de Letras a bonos corporativos.\n\nAcción: preparar propuesta con 3 escenarios para el viernes.'},
+  {id:3,folder:'1:1',title:'One-on-one con Bruno',date:'2026-03-18',people:'Bruno Soto',notes:'Feedback positivo sobre la migración.\nQuiere capacitarse en Kubernetes.\n\nAcción: buscar curso y proponerle presupuesto.'},
+  {id:4,folder:'Board',title:'Directorio mensual — marzo',date:'2026-03-15',people:'Directorio completo',notes:'Presentación de resultados Q1.\nSe aprobó presupuesto de expansión.\nDiscusión sobre nuevas contrataciones para el equipo de research.\n\nAcción: preparar job descriptions para la próxima reunión.'},
+  {id:5,folder:'Estrategia',title:'Planning comercial Q2',date:'2026-03-12',people:'Equipo comercial',notes:'Objetivos:\n- 15 cuentas nuevas\n- Aumentar AUM en 20%\n- Lanzar producto de renta variable Latam\n\nSegmentar por perfil de riesgo. Diego lidera pipeline.'},
+];
+
+let M=mLoad()||DEFAULT_MEETINGS;
+let M_nid=Math.max(...M.map(r=>r.id),0)+1;
+function mLoad(){try{const d=localStorage.getItem(M_SK);return d?JSON.parse(d):null}catch{return null}}
+function mSave(){try{localStorage.setItem(M_SK,JSON.stringify(M))}catch{}showSaved()}
+
+function mDraw(){
+  // Folder pills
+  const foldersEl=document.getElementById('m-folders');
+  if(!foldersEl)return;
+  const allFolders=['Todas',...M_FOLDERS];
+  foldersEl.innerHTML=allFolders.map(f=>{
+    const active=M_activefolder===f;
+    const col=f==='Todas'?'#1a1a1a':(M_FOLDER_COLORS[f]||'#666');
+    return`<span class="mn-folder-pill${active?' active':''}" onclick="mSetFolder('${f}')" style="${active?'border-color:'+col+';background:'+col+';color:#fff':'border-color:rgba(0,0,0,.12);background:#fff;color:#888'}">${f}${f!=='Todas'?' <span style="font-size:10px;opacity:.7">('+M.filter(r=>r.folder===f).length+')</span>':''}</span>`;
+  }).join('');
+
+  // Filter
+  const search=(document.getElementById('m-search')?.value||'').toLowerCase();
+  const dateFrom=document.getElementById('m-date-from')?.value||'';
+  const dateTo=document.getElementById('m-date-to')?.value||'';
+
+  let list=M.slice();
+  if(M_activefolder!=='Todas')list=list.filter(r=>r.folder===M_activefolder);
+  if(search)list=list.filter(r=>(r.title||'').toLowerCase().includes(search)||(r.people||'').toLowerCase().includes(search)||(r.notes||'').toLowerCase().includes(search));
+  if(dateFrom)list=list.filter(r=>r.date>=dateFrom);
+  if(dateTo)list=list.filter(r=>r.date<=dateTo);
+
+  // Sort by date descending
+  list.sort((a,b)=>(b.date||'').localeCompare(a.date||''));
+
+  // Count
+  const countEl=document.getElementById('m-count');
+  if(countEl)countEl.textContent=list.length+' reunión'+(list.length!==1?'es':'');
+
+  // Group by month
+  const groups={};
+  list.forEach(r=>{
+    const key=r.date?r.date.slice(0,7):'sin-fecha';
+    if(!groups[key])groups[key]=[];
+    groups[key].push(r);
+  });
+
+  const listEl=document.getElementById('m-list');
+  if(!listEl)return;
+
+  if(!list.length){
+    listEl.innerHTML='<div class="mn-empty">No hay reuniones que mostrar.<br><span style="font-size:11px">Creá una con el botón de arriba.</span></div>';
+    return;
+  }
+
+  const monthNames=['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+  let html='';
+  Object.keys(groups).sort().reverse().forEach(key=>{
+    const[y,m]=key.split('-');
+    const label=key==='sin-fecha'?'Sin fecha':monthNames[parseInt(m)-1]+' '+y;
+    html+=`<div style="font-size:11px;font-weight:700;color:#aaa;text-transform:uppercase;letter-spacing:.06em;margin-top:10px;margin-bottom:4px;padding-left:2px">${label}</div>`;
+    groups[key].forEach(r=>{
+      const col=M_FOLDER_COLORS[r.folder]||'#666';
+      const isOpen=M_openCards[r.id];
+      const editing=M_openCards[r.id]==='edit';
+      html+=`<div class="mn-card" id="m-card-${r.id}">
+        <div class="mn-card-header" onclick="mToggle(${r.id})">
+          <span class="mn-card-arrow${isOpen?' open':''}">▶</span>
+          <span class="mn-card-folder" style="background:${col}18;color:${col}">${xe(r.folder)}</span>
+          <span class="mn-card-title">${r.title?xe(r.title):'<span style="color:#ddd;font-weight:400">Sin título</span>'}</span>
+          <span class="mn-card-people" title="${xe(r.people)}">${r.people?'👥 '+xe(r.people):''}</span>
+          <span class="mn-card-date">${mFmtDateLong(r.date)}</span>
+          <button class="mn-card-del" onclick="event.stopPropagation();mDel(${r.id})" title="Eliminar">✕</button>
+        </div>
+        <div class="mn-card-body${isOpen?' open':''}">
+          ${editing?mRenderEdit(r):mRenderView(r)}
+        </div>
+      </div>`;
+    });
+  });
+
+  html+=`<button class="mn-add-btn" onclick="mAddMeeting()">＋ Nueva reunión</button>`;
+  listEl.innerHTML=html;
+}
+
+function mRenderView(r){
+  const col=M_FOLDER_COLORS[r.folder]||'#666';
+  return`
+    <div style="display:flex;gap:16px;flex-wrap:wrap;margin-bottom:12px">
+      <div style="flex:1;min-width:180px">
+        <div class="mn-body-label">Fecha</div>
+        <div class="mn-body-field" ondblclick="mStartEdit(${r.id})">${r.date?mFmtDateLong(r.date):'<span style="color:#ddd">Sin fecha</span>'}</div>
+      </div>
+      <div style="flex:2;min-width:200px">
+        <div class="mn-body-label">Participantes</div>
+        <div class="mn-body-field${r.people?'':' empty'}" ondblclick="mStartEdit(${r.id})">${r.people?xe(r.people):'Sin participantes'}</div>
+      </div>
+    </div>
+    <div class="mn-body-row">
+      <div class="mn-body-label">Notas</div>
+      <div class="mn-body-field${r.notes?'':' empty'}" ondblclick="mStartEdit(${r.id})" style="min-height:60px">${r.notes?xe(r.notes):'Hacé doble clic para agregar notas...'}</div>
+    </div>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-top:8px">
+      <div class="mn-folder-tags">
+        ${M_FOLDERS.map(f=>{const fc=M_FOLDER_COLORS[f]||'#666';return`<span class="mn-folder-tag" onclick="mSetCardFolder(${r.id},'${f}')" style="background:${r.folder===f?fc+'22':'#f5f5f5'};color:${r.folder===f?fc:'#aaa'}">${f}</span>`}).join('')}
+      </div>
+      <button onclick="mStartEdit(${r.id})" style="font-size:11px;padding:4px 12px;border-radius:6px;border:1px solid rgba(0,0,0,.15);background:none;color:#888;cursor:pointer;flex-shrink:0;margin-left:12px" onmouseenter="this.style.background='#f5f5f5'" onmouseleave="this.style.background='none'">Editar</button>
+    </div>`;
+}
+
+function mRenderEdit(r){
+  return`
+    <div style="display:flex;gap:16px;flex-wrap:wrap;margin-bottom:12px">
+      <div style="flex:1;min-width:180px">
+        <div class="mn-body-label">Título</div>
+        <input class="mn-body-input" id="m-ed-title-${r.id}" value="${xe(r.title)}" placeholder="Título de la reunión...">
+      </div>
+      <div style="flex:0 0 160px">
+        <div class="mn-body-label">Fecha</div>
+        <input type="date" class="mn-body-input-date" id="m-ed-date-${r.id}" value="${r.date||''}" style="width:100%">
+      </div>
+    </div>
+    <div class="mn-body-row">
+      <div class="mn-body-label">Participantes</div>
+      <input class="mn-body-input" id="m-ed-people-${r.id}" value="${xe(r.people)}" placeholder="Nombres separados por coma...">
+    </div>
+    <div class="mn-body-row">
+      <div class="mn-body-label">Notas</div>
+      <textarea class="mn-body-textarea" id="m-ed-notes-${r.id}" placeholder="Anotaciones, decisiones, acciones...">${xe(r.notes)}</textarea>
+    </div>
+    <div class="mn-body-row">
+      <div class="mn-body-label">Carpeta</div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap">
+        ${M_FOLDERS.map(f=>{const fc=M_FOLDER_COLORS[f]||'#666';return`<span class="mn-folder-tag" onclick="document.getElementById('m-ed-folder-${r.id}').value='${f}';this.parentElement.querySelectorAll('.mn-folder-tag').forEach(t=>t.style.background='#f5f5f5');this.parentElement.querySelectorAll('.mn-folder-tag').forEach(t=>t.style.color='#aaa');this.style.background='${fc}22';this.style.color='${fc}'" style="background:${r.folder===f?fc+'22':'#f5f5f5'};color:${r.folder===f?fc:'#aaa'}">${f}</span>`}).join('')}
+        <input type="hidden" id="m-ed-folder-${r.id}" value="${r.folder}">
+      </div>
+    </div>
+    <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:6px">
+      <button onclick="mCancelEdit(${r.id})" style="font-size:11px;padding:5px 14px;background:none;border:1px solid rgba(0,0,0,.15);border-radius:6px;cursor:pointer;color:#888">Cancelar</button>
+      <button onclick="mSaveEdit(${r.id})" style="font-size:11px;padding:5px 14px;background:#1a1a1a;color:#fff;border:none;border-radius:6px;cursor:pointer;font-weight:500">Guardar</button>
+    </div>`;
+}
+
+function mFmtDateLong(s){
+  if(!s)return'Sin fecha';
+  const[y,m,d]=s.split('-');
+  const months=['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
+  return parseInt(d)+' '+months[parseInt(m)-1]+' '+y;
+}
+
+function mSetFolder(f){M_activefolder=f;mDraw()}
+function mSetCardFolder(id,f){const r=M.find(x=>x.id===id);if(r){r.folder=f;mSave();mDraw()}}
+
+function mToggle(id){
+  if(M_openCards[id])delete M_openCards[id];
+  else M_openCards[id]=true;
+  mDraw();
+}
+
+function mStartEdit(id){
+  M_openCards[id]='edit';
+  mDraw();
+  setTimeout(()=>{
+    const ta=document.getElementById('m-ed-notes-'+id);
+    if(ta){ta.style.height='auto';ta.style.height=Math.max(80,ta.scrollHeight)+'px';ta.oninput=()=>{ta.style.height='auto';ta.style.height=Math.max(80,ta.scrollHeight)+'px'}}
+    const ti=document.getElementById('m-ed-title-'+id);if(ti)ti.focus();
+  },30);
+}
+
+function mCancelEdit(id){M_openCards[id]=true;mDraw()}
+
+function mSaveEdit(id){
+  const r=M.find(x=>x.id===id);if(!r)return;
+  r.title=(document.getElementById('m-ed-title-'+id)?.value||'').trim();
+  r.date=document.getElementById('m-ed-date-'+id)?.value||'';
+  r.people=(document.getElementById('m-ed-people-'+id)?.value||'').trim();
+  r.notes=(document.getElementById('m-ed-notes-'+id)?.value||'').trim();
+  const folderInput=document.getElementById('m-ed-folder-'+id);
+  if(folderInput)r.folder=folderInput.value;
+  mSave();
+  M_openCards[id]=true;
+  mDraw();
+}
+
+function mAddMeeting(){
+  const r={id:M_nid++,folder:M_activefolder==='Todas'?'Equipo':M_activefolder,title:'',date:today(),people:'',notes:''};
+  M.unshift(r);mSave();
+  M_activefolder='Todas';
+  M_openCards[r.id]='edit';
+  mDraw();
+  setTimeout(()=>{
+    document.getElementById('m-card-'+r.id)?.scrollIntoView({behavior:'smooth',block:'nearest'});
+    const ti=document.getElementById('m-ed-title-'+r.id);if(ti)ti.focus();
+  },80);
+}
+
+function mDel(id){if(!confirm('¿Eliminar reunión?'))return;M=M.filter(r=>r.id!==id);delete M_openCards[id];mSave();mDraw()}
+
+function mClearDates(){
+  const from=document.getElementById('m-date-from');
+  const to=document.getElementById('m-date-to');
+  if(from)from.value='';
+  if(to)to.value='';
+  mDraw();
+}
+
+// ═══════════════════════════════════════════════════════════════
+// CLAUDE — IDEAS & NOTAS
+// ═══════════════════════════════════════════════════════════════
+const N_SK='tt_claude_v1';
+const N_CATS=['Trabajo','Research','Escritura','Código','Ideas','Personal','Prompts','Otro'];
+const N_CAT_COLORS={Trabajo:'#1a3a8f',Research:'#0e7490',Escritura:'#7c3aed',Código:'#059669',Ideas:'#d97706',Personal:'#db2777',Prompts:'#dc2626',Otro:'#666'};
+let N_activecat='Todas';
+
+const DEFAULT_NOTES=[
+  {id:1,cat:'Trabajo',title:'Preparar reuniones',body:'Pasarle el contexto de la reunión y pedirle que genere una agenda, puntos clave a discutir y preguntas estratégicas para hacer.',date:'2026-03-10'},
+  {id:2,cat:'Research',title:'Analizar documentos largos',body:'Subir PDFs de reportes, contratos o research y pedirle un resumen ejecutivo con los puntos más importantes destacados.',date:'2026-03-10'},
+  {id:3,cat:'Escritura',title:'Mejorar emails difíciles',body:'Pasarle un borrador de un email delicado (feedback, negociación, rechazo) y pedirle que lo mejore en tono, claridad y persuasión.',date:'2026-03-11'},
+  {id:4,cat:'Código',title:'Debug y explicación de código',body:'Pegar el código con el error y pedirle que explique qué está pasando y cómo arreglarlo. También sirve para refactorizar.',date:'2026-03-11'},
+  {id:5,cat:'Ideas',title:'Brainstorming de productos',body:'Describir el problema que quiero resolver y pedirle 10 ideas de producto o solución, con pros y contras de cada una.',date:'2026-03-12'},
+  {id:6,cat:'Prompts',title:'Prompt para crear reportes',body:'"Actuá como analista financiero. Dado este dataset, generá un reporte ejecutivo con: resumen, tendencias clave, riesgos y recomendaciones."',date:'2026-03-12'},
+  {id:7,cat:'Personal',title:'Pensar decisiones difíciles',body:'Explicarle una decisión que tengo que tomar, pedirle que me liste pros/contras, que me haga preguntas para clarificar, y que me dé su perspectiva.',date:'2026-03-13'},
+  {id:8,cat:'Research',title:'Comparar opciones',body:'"Comparame estas 3 opciones en una tabla: [X, Y, Z]. Criterios: costo, facilidad de uso, escalabilidad, soporte." Muy útil para tecnología o proveedores.',date:'2026-03-13'},
+];
+
+let N=nLoad()||DEFAULT_NOTES;
+let N_nid=Math.max(...N.map(r=>r.id),0)+1;
+function nLoad(){try{const d=localStorage.getItem(N_SK);return d?JSON.parse(d):null}catch{return null}}
+function nSave(){try{localStorage.setItem(N_SK,JSON.stringify(N))}catch{}showSaved()}
+
+function nDraw(){
+  // Category pills
+  const catsEl=document.getElementById('n-cats');
+  if(!catsEl)return;
+  const allCats=['Todas',...N_CATS];
+  catsEl.innerHTML=allCats.map(c=>{
+    const active=N_activecat===c;
+    const col=c==='Todas'?'#1a1a1a':(N_CAT_COLORS[c]||'#666');
+    return`<span onclick="nSetCat('${c}')" style="font-size:11px;padding:4px 12px;border-radius:20px;cursor:pointer;border:1.5px solid ${active?col:'rgba(0,0,0,.12)'};background:${active?col:'#fff'};color:${active?'#fff':'#888'};font-weight:${active?600:400};transition:all .15s">${c}</span>`;
+  }).join('');
+
+  // Cards
+  const grid=document.getElementById('n-grid');
+  if(!grid)return;
+  const list=N_activecat==='Todas'?N:N.filter(r=>r.cat===N_activecat);
+  if(!list.length){
+    grid.innerHTML=`<div style="grid-column:1/-1;text-align:center;padding:60px 20px;color:#ccc;font-size:13px">No hay notas en esta categoría.<br><span style="font-size:11px">Creá una con el botón de arriba.</span></div>`;
+    return;
+  }
+  grid.innerHTML=list.map(r=>{
+    const col=N_CAT_COLORS[r.cat]||'#666';
+    return`<div id="n-card-${r.id}" style="background:#fff;border-radius:10px;border:1px solid rgba(0,0,0,.09);padding:16px;display:flex;flex-direction:column;gap:8px;transition:box-shadow .15s;position:relative" onmouseenter="this.style.boxShadow='0 4px 18px rgba(0,0,0,.09)'" onmouseleave="this.style.boxShadow='none'">
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:8px">
+        <span style="font-size:10px;font-weight:600;padding:2px 9px;border-radius:20px;background:${col}18;color:${col};letter-spacing:.04em">${xe(r.cat)}</span>
+        <div style="display:flex;gap:6px;align-items:center">
+          <span style="font-size:10px;color:#ccc">${fmtDate(r.date)}</span>
+          <button onclick="nDel(${r.id})" style="background:none;border:none;cursor:pointer;color:#ddd;font-size:12px;padding:0;line-height:1" onmouseenter="this.style.color='#E24B4A'" onmouseleave="this.style.color='#ddd'">✕</button>
+        </div>
+      </div>
+      <div id="n-title-${r.id}" ondblclick="nEditField(${r.id},'title')" style="font-size:13px;font-weight:700;color:#1a1a1a;cursor:default;line-height:1.4;min-height:18px">${r.title?xe(r.title):'<span style="color:#ddd;font-weight:400">Título...</span>'}</div>
+      <div id="n-body-${r.id}" ondblclick="nEditField(${r.id},'body')" style="font-size:12px;color:#555;line-height:1.6;cursor:default;white-space:pre-wrap;word-break:break-word;flex:1;min-height:40px">${r.body?xe(r.body):'<span style="color:#ddd">Escribí tu idea, prompt o caso de uso...</span>'}</div>
+      <div style="border-top:1px solid rgba(0,0,0,.06);padding-top:8px;display:flex;gap:8px;flex-wrap:wrap">
+        ${N_CATS.map(c=>`<span onclick="nSetCardCat(${r.id},'${c}')" style="font-size:10px;padding:2px 8px;border-radius:10px;cursor:pointer;background:${r.cat===c?col+'22':'#f5f5f5'};color:${r.cat===c?col:'#aaa'};transition:all .12s">${c}</span>`).join('')}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function nSetCat(c){N_activecat=c;nDraw()}
+function nSetCardCat(id,c){const r=N.find(x=>x.id===id);if(r){r.cat=c;nSave();nDraw()}}
+
+function nEditField(id,field){
+  const r=N.find(x=>x.id===id);if(!r)return;
+  const el=document.getElementById(`n-${field}-${id}`);if(!el)return;
+  const isTitle=field==='title';
+  const cur=r[field]||'';
+  el.innerHTML=`<textarea id="n-ta-${id}-${field}" style="width:100%;border:none;outline:2px solid #378ADD;outline-offset:-2px;background:#fffef0;border-radius:4px;padding:4px 6px;font-size:${isTitle?13:12}px;font-weight:${isTitle?700:400};font-family:inherit;line-height:${isTitle?1.4:1.6};resize:none;overflow:hidden;min-height:${isTitle?24:60}px;color:#1a1a1a">${xe(cur)}</textarea>`;
+  const ta=document.getElementById(`n-ta-${id}-${field}`);
+  as(ta);
+  ta.focus();
+  try{ta.setSelectionRange(ta.value.length,ta.value.length)}catch{}
+  ta.oninput=()=>as(ta);
+  ta.onblur=()=>{r[field]=ta.value.trim();nSave();nDraw()};
+  ta.onkeydown=e=>{
+    if(e.key==='Escape'){nDraw();return}
+    if(e.key==='Tab'){e.preventDefault();r[field]=ta.value.trim();nSave();nDraw();const nextField=field==='title'?'body':'title';setTimeout(()=>nEditField(id,nextField),30)}
+    if(e.key==='Enter'&&isTitle){e.preventDefault();r[field]=ta.value.trim();nSave();nDraw();setTimeout(()=>nEditField(id,'body'),30)}
+  };
+}
+
+function nAddCard(){
+  const r={id:N_nid++,cat:N_activecat==='Todas'?'Ideas':N_activecat,title:'',body:'',date:today()};
+  N.unshift(r);nSave();N_activecat='Todas';nDraw();
+  setTimeout(()=>nEditField(r.id,'title'),60);
+}
+function nDel(id){if(!confirm('¿Eliminar nota?'))return;N=N.filter(r=>r.id!==id);nSave();nDraw()}
+
+tDraw();
+document.addEventListener('input',e=>{if(e.target.classList.contains('cell-ed'))as(e.target)});
+
+</script>
+
+<!-- STRESS RELIEF: BUBBLE WRAP -->
+<style>
 #bw-fab{position:fixed;bottom:18px;right:18px;z-index:50;width:52px;height:52px;border-radius:50%;background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;border:none;cursor:pointer;font-size:22px;box-shadow:0 4px 18px rgba(102,126,234,.45);transition:transform .2s,box-shadow .2s;display:flex;align-items:center;justify-content:center}
 #bw-fab:hover{transform:scale(1.12);box-shadow:0 6px 24px rgba(102,126,234,.6)}
 #bw-fab:active{transform:scale(.95)}
@@ -209,167 +1040,8 @@ tbody tr:hover .drag-handle,tbody tr:hover .wdrag-handle{opacity:1}
 .bw-reset:hover{background:rgba(118,75,162,.08)}
 .bw-msg{font-size:10px;color:#bbb;font-style:italic}
 </style>
-</head>
-<body>
 
-<div class="topbar">
-  <div class="topbar-left">
-    <svg width="26" height="26" viewBox="0 0 100 100" style="opacity:.85" fill="currentColor"><rect x="10" y="10" width="35" height="35" fill="#1a3a8f"/><rect x="55" y="10" width="35" height="35" fill="#0e7490"/><rect x="10" y="55" width="35" height="35" fill="#d97706"/><rect x="55" y="55" width="35" height="35" fill="#059669"/></svg>
-    <div class="tb-div"></div><div class="logo"><b>CENTRAL MANAGEMENT</b></div>
-  </div>
-  <div style="display:flex;gap:8px;align-items:center">
-    <span class="saved" id="sv"></span>
-    <button class="btn-primary" id="btn-add" onclick="addRow()">+ Nueva tarea</button>
-  </div>
-</div>
-
-<div class="motiv-bar">
-  <span class="motiv-icon" id="motiv-icon">✦</span>
-  <span class="motiv-text" id="motiv-text"></span>
-</div>
-
-<div class="switcher">
-  <button class="sw-btn active" id="sw-tasks" onclick="switchTo('tasks')">✅ Central Management</button>
-  <button class="sw-btn" id="sw-write" onclick="switchTo('write')">💬 A Escribir</button>
-  <button class="sw-btn" id="sw-free" onclick="switchTo('free')">◆ Tiempo Libre</button>
-  <button class="sw-btn" id="sw-meet" onclick="switchTo('meet')">📋 Reuniones</button>
-  <button class="sw-btn" id="sw-claude" onclick="switchTo('claude')">✦ Claude</button>
-</div>
-
-<!-- TASK TRACKER -->
-<div id="sec-tasks">
-  <div class="filters">
-    <input type="text" id="t-search" placeholder="Buscar..." oninput="tDraw()">
-    <span class="fmode-btn on-include" id="t-btn-all" onclick="tSetMode('all')">Todas</span>
-    <span class="fmode-btn" id="t-btn-include" onclick="tSetMode('include')">Solo</span>
-    <span class="fmode-btn" id="t-btn-exclude" onclick="tSetMode('exclude')">Todas menos</span>
-    <div class="divider"></div>
-    <div class="fdots" id="t-dots"></div>
-    <span class="hint">Doble clic para editar · Arrastrar ⠿ para ordenar</span>
-  </div>
-  <div class="legend">
-    <div class="leg-item"><div class="leg-dot" style="background:#E24B4A"></div>Urgente</div>
-    <div class="leg-item"><div class="leg-dot" style="background:#EF9F27"></div>En proceso</div>
-    <div class="leg-item"><div class="leg-dot" style="background:#378ADD"></div>Esperando</div>
-    <div class="leg-item"><div class="leg-dot" style="background:#639922"></div>Listo / OK</div>
-    <div class="leg-item"><div class="leg-dot" style="background:#888"></div>Cerrado</div>
-  </div>
-  <div class="main">
-    <table>
-      <thead><tr>
-        <th class="t-col-drag"></th><th class="t-col-dot"></th>
-        <th class="t-col-title">Título</th>
-        <th class="t-col-desc">Descripción</th>
-        <th class="t-col-upd">Estado / Seguimiento</th>
-        <th class="t-col-date" style="text-align:center">Creado</th>
-        <th class="t-col-del"></th>
-      </tr></thead>
-      <tbody id="t-body"></tbody>
-    </table>
-  </div>
-</div>
-
-<!-- A ESCRIBIR -->
-<div id="sec-write" style="display:none">
-  <div class="filters">
-    <input type="text" id="w-search" placeholder="Buscar..." oninput="wDraw()">
-    <span class="fmode-btn on-include" id="w-btn-all" onclick="wSetMode('all')">Todas</span>
-    <span class="fmode-btn" id="w-btn-include" onclick="wSetMode('include')">Solo</span>
-    <span class="fmode-btn" id="w-btn-exclude" onclick="wSetMode('exclude')">Todas menos</span>
-    <div class="divider"></div>
-    <div class="fdots" id="w-dots"></div>
-    <span class="hint">Doble clic para editar</span>
-  </div>
-  <div class="legend">
-    <div class="leg-item"><div class="leg-dot" style="background:#E24B4A"></div>Urgente</div>
-    <div class="leg-item"><div class="leg-dot" style="background:#EF9F27"></div>En proceso</div>
-    <div class="leg-item"><div class="leg-dot" style="background:#378ADD"></div>Esperando</div>
-    <div class="leg-item"><div class="leg-dot" style="background:#639922"></div>Listo / OK</div>
-  </div>
-  <div class="main">
-    <table>
-      <thead><tr>
-        <th class="w-col-drag"></th><th class="w-col-dot"></th>
-        <th class="w-col-name">Nombre</th>
-        <th class="w-col-topic">Tema</th>
-        <th class="w-col-del"></th>
-      </tr></thead>
-      <tbody id="w-body"></tbody>
-    </table>
-  </div>
-</div>
-
-<!-- TIEMPO LIBRE -->
-<div id="sec-free" style="display:none">
-  <div class="filters">
-    <input type="text" id="f-search" placeholder="Buscar..." oninput="fDraw()">
-    <span class="fmode-btn on-include" id="f-btn-all" onclick="fSetMode('all')">Todas</span>
-    <span class="fmode-btn" id="f-btn-include" onclick="fSetMode('include')">Solo</span>
-    <span class="fmode-btn" id="f-btn-exclude" onclick="fSetMode('exclude')">Todas menos</span>
-    <div class="divider"></div>
-    <div class="fdots" id="f-dots"></div>
-    <span class="hint">Doble clic en título · Clic en link para abrir</span>
-  </div>
-  <div class="legend">
-    <div class="leg-item"><div class="leg-dot" style="background:#E24B4A"></div>Pendiente leer</div>
-    <div class="leg-item"><div class="leg-dot" style="background:#EF9F27"></div>Leyendo</div>
-    <div class="leg-item"><div class="leg-dot" style="background:#378ADD"></div>Interesante</div>
-    <div class="leg-item"><div class="leg-dot" style="background:#639922"></div>Leído</div>
-  </div>
-  <div class="main">
-    <table>
-      <thead><tr>
-        <th class="f-col-drag"></th><th class="f-col-dot"></th>
-        <th class="f-col-title">Título / Descripción</th>
-        <th class="f-col-link">Link</th>
-        <th class="f-col-del"></th>
-      </tr></thead>
-      <tbody id="f-body"></tbody>
-    </table>
-  </div>
-</div>
-
-<!-- REUNIONES -->
-<div id="sec-meet" style="display:none">
-  <div style="padding:16px 20px 0;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px">
-    <div>
-      <div style="font-size:15px;font-weight:700;color:#1a1a1a;margin-bottom:2px">📋 Notas de Reuniones</div>
-      <div style="font-size:11px;color:#bbb">Tu base de datos de reuniones por carpeta.</div>
-    </div>
-    <button class="btn-primary" onclick="mAddMeeting()" style="font-size:11px;padding:5px 13px">+ Nueva reunión</button>
-  </div>
-  <div style="padding:12px 20px 0;display:flex;gap:8px;flex-wrap:wrap" id="m-folders"></div>
-  <div class="mn-toolbar">
-    <input type="text" class="mn-search" id="m-search" placeholder="Buscar..." oninput="mDraw()">
-    <span class="hint" style="margin-left:auto" id="m-count"></span>
-  </div>
-  <div class="main" style="padding:16px 20px">
-    <div class="mn-cards" id="m-list"></div>
-  </div>
-</div>
-
-<!-- CLAUDE -->
-<div id="sec-claude" style="display:none">
-  <div style="padding:20px 20px 0;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px">
-    <div>
-      <div style="font-size:15px;font-weight:700;color:#1a1a1a;margin-bottom:2px">✦ Ideas & usos de Claude</div>
-      <div style="font-size:11px;color:#bbb">Tu diario personal de prompts e ideas.</div>
-    </div>
-    <button class="btn-primary" onclick="nAddCard()" style="font-size:11px;padding:5px 13px">+ Nueva nota</button>
-  </div>
-  <div style="padding:12px 20px 0;display:flex;gap:8px;flex-wrap:wrap" id="n-cats"></div>
-  <div class="main" style="padding:16px 20px">
-    <div id="n-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px"></div>
-  </div>
-</div>
-
-<div id="picker-float">
-  <div class="pk-title">Estado</div>
-  <div id="pk-opts"></div>
-</div>
-
-<div id="modal-root"></div>
-<button id="bw-fab" onclick="bwToggle()" title="Sacate el estrés">💥</button>
+<button id="bw-fab" onclick="bwToggle()" title="Sacate el estrés">&#x1f4a5;</button>
 <div id="bw-panel">
   <div class="bw-header">
     <span class="bw-title">Bubble Wrap</span>
@@ -383,210 +1055,67 @@ tbody tr:hover .drag-handle,tbody tr:hover .wdrag-handle{opacity:1}
 </div>
 
 <script>
-// DATOS Y ALMACENAMIENTO
-const STORAGE_KEY = 'task_tracker_data';
-const COLORS = {
-  none: { bg: '#d4d4d4', label: 'Sin estado' },
-  red: { bg: '#E24B4A', label: 'Urgente' },
-  amber: { bg: '#EF9F27', label: 'En proceso' },
-  blue: { bg: '#378ADD', label: 'Esperando' },
-  green: { bg: '#639922', label: 'Listo / OK' },
-  gray: { bg: '#888', label: 'Cerrado' }
-};
+(function(){
+  const TOTAL=48;
+  const EMOJIS=['💥','✨','⚡','💫','🎉','💜','🔮','🫧'];
+  const MSGS_PROGRESS=['Dale, seguí...','Eso es terapia','Qué satisfacción','Imparable','Casi, casi...'];
+  const MSGS_DONE=['Sos libre del estrés','Plástico destruido','Zen mode: ON','Nivel de paz: 100%','Ya sos otra persona'];
+  let popped=0;
 
-const STATE = {
-  section: 'tasks',
-  tasks: [],
-  people: [],
-  links: [],
-  meetings: []
-};
-
-// LOAD / SAVE
-function load() {
-  const data = localStorage.getItem(STORAGE_KEY);
-  if (data) Object.assign(STATE, JSON.parse(data));
-}
-
-function save() {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(STATE));
-  const el = document.getElementById('sv');
-  if (el) {
-    el.textContent = '✓ Guardado';
-    setTimeout(() => el.textContent = '', 2000);
+  function buildGrid(){
+    const grid=document.getElementById('bw-grid');
+    grid.innerHTML='';
+    popped=0;
+    updateScore();
+    document.getElementById('bw-msg').textContent='Hacé clic para reventar';
+    for(let i=0;i<TOTAL;i++){
+      const b=document.createElement('div');
+      b.className='bw-bubble';
+      b.addEventListener('click',function(){
+        if(this.classList.contains('popped'))return;
+        this.classList.add('popped');
+        popped++;
+        updateScore();
+        // Pop emoji
+        const em=document.createElement('span');
+        em.className='bw-pop';
+        em.textContent=EMOJIS[Math.floor(Math.random()*EMOJIS.length)];
+        em.style.left=Math.random()*40+'%';
+        em.style.top='10%';
+        this.appendChild(em);
+        setTimeout(()=>em.remove(),500);
+        // Messages
+        const msg=document.getElementById('bw-msg');
+        if(popped===TOTAL){
+          msg.textContent=MSGS_DONE[Math.floor(Math.random()*MSGS_DONE.length)];
+        }else if(popped%8===0){
+          msg.textContent=MSGS_PROGRESS[Math.floor(Math.random()*MSGS_PROGRESS.length)];
+        }
+      });
+      grid.appendChild(b);
+    }
   }
-}
 
-// HELPERS
-function xe(s) { return String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;') }
-function today() { return new Date().toISOString().slice(0, 10) }
-function fmtDate(s) {
-  if (!s) return '—';
-  const [, m, d] = s.split('-');
-  const months = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic'];
-  return `${parseInt(d)} ${months[parseInt(m) - 1]}`;
-}
+  function updateScore(){
+    document.getElementById('bw-score').textContent=popped+' / '+TOTAL;
+  }
 
-// INIT
-load();
-if (!STATE.tasks.length) {
-  STATE.tasks = [
-    { id: 1, c: 'red', t: 'Migración base de datos', d: 'De MySQL a Postgres', u: 'En progreso', cr: '2026-03-10' },
-    { id: 2, c: 'amber', t: 'Campaña Q2', d: 'Definir objetivos y presupuesto', u: 'Pendiente reunión', cr: '2026-03-11' },
-    { id: 3, c: 'blue', t: 'Contratos proveedores', d: 'Revisar cláusulas regulatorias', u: 'Espera abogado', cr: '2026-03-11' }
-  ];
-  STATE.people = [
-    { id: 1, c: 'red', name: 'Matías López', topic: 'Documentos auditoría' },
-    { id: 2, c: 'amber', name: 'Clara Ruiz', topic: 'Reunión agencia' }
-  ];
-  STATE.links = [
-    { id: 1, c: 'red', title: 'Thread tasas Fed', link: 'https://twitter.com/example', note: 'Research renta fija' }
-  ];
-  save();
-}
-
-// UI - CAMBIAR SECCIÓN
-function switchSection(sec) {
-  STATE.section = sec;
-  document.querySelectorAll('[data-sec]').forEach(el => el.style.display = 'none');
-  document.getElementById('sec-' + sec).style.display = '';
-  document.querySelectorAll('.sw-btn').forEach(b => b.classList.remove('active'));
-  document.getElementById('sw-' + sec).classList.add('active');
-  draw();
-}
-
-// TASKS
-function drawTasks() {
-  const list = STATE.tasks;
-  const tbody = document.getElementById('t-body');
-  tbody.innerHTML = list.map(r => `
-    <tr style="background:${r.c === 'red' ? '#fff5f5' : r.c === 'amber' ? '#fffbf0' : r.c === 'blue' ? '#f0f7ff' : r.c === 'green' ? '#f4faed' : 'inherit'}">
-      <td style="width:20px;padding:8px"><div style="width:12px;height:12px;border-radius:50%;background:${COLORS[r.c].bg};cursor:pointer" onclick="pickColor('tasks', ${r.id})"></div></td>
-      <td style="padding:8px;font-weight:600">${xe(r.t)}</td>
-      <td style="padding:8px">${xe(r.d)}</td>
-      <td style="padding:8px">${xe(r.u)}</td>
-      <td style="padding:8px;font-size:10px;color:#aaa">${fmtDate(r.cr)}</td>
-      <td style="padding:8px"><button onclick="delItem('tasks', ${r.id})" style="border:none;background:none;cursor:pointer;color:#ddd">✕</button></td>
-    </tr>
-  `).join('') + `<tr><td colspan="6" style="padding:10px"><button onclick="addTask()" style="border:none;background:none;cursor:pointer;color:#bbb;font-size:12px">+ Nueva tarea</button></td></tr>`;
-}
-
-function addTask() {
-  const id = Math.max(...STATE.tasks.map(t => t.id), 0) + 1;
-  STATE.tasks.push({ id, c: 'none', t: '', d: '', u: '', cr: today() });
-  save();
-  drawTasks();
-}
-
-function delItem(sec, id) {
-  if (!confirm('¿Eliminar?')) return;
-  STATE[sec] = STATE[sec].filter(r => r.id !== id);
-  save();
-  draw();
-}
-
-// PEOPLE
-function drawPeople() {
-  const tbody = document.getElementById('w-body');
-  tbody.innerHTML = STATE.people.map(r => `
-    <tr style="background:${r.c === 'red' ? '#fff5f5' : r.c === 'amber' ? '#fffbf0' : 'inherit'}">
-      <td style="width:20px;padding:10px"><div style="width:12px;height:12px;border-radius:50%;background:${COLORS[r.c].bg};cursor:pointer" onclick="pickColor('people', ${r.id})"></div></td>
-      <td style="padding:10px;font-weight:600">${xe(r.name)}</td>
-      <td style="padding:10px">${xe(r.topic)}</td>
-      <td style="padding:10px"><button onclick="delItem('people', ${r.id})" style="border:none;background:none;cursor:pointer;color:#ddd">✕</button></td>
-    </tr>
-  `).join('') + `<tr><td colspan="4" style="padding:10px"><button onclick="addPerson()" style="border:none;background:none;cursor:pointer;color:#bbb;font-size:12px">+ Agregar persona</button></td></tr>`;
-}
-
-function addPerson() {
-  const id = Math.max(...STATE.people.map(t => t.id), 0) + 1;
-  STATE.people.push({ id, c: 'none', name: '', topic: '' });
-  save();
-  drawPeople();
-}
-
-// LINKS
-function drawLinks() {
-  const tbody = document.getElementById('f-body');
-  tbody.innerHTML = STATE.links.map(r => `
-    <tr style="background:${r.c === 'red' ? '#fff5f5' : r.c === 'amber' ? '#fffbf0' : 'inherit'}">
-      <td style="width:20px;padding:10px"><div style="width:12px;height:12px;border-radius:50%;background:${COLORS[r.c].bg};cursor:pointer" onclick="pickColor('links', ${r.id})"></div></td>
-      <td style="padding:10px;font-weight:600">${xe(r.title)}</td>
-      <td style="padding:10px"><a href="${xe(r.link)}" target="_blank" style="color:#1a3a8f;text-decoration:none">${xe(r.link.slice(0, 40))}...</a></td>
-      <td style="padding:10px;font-size:11px;color:#666">${xe(r.note)}</td>
-      <td style="padding:10px"><button onclick="delItem('links', ${r.id})" style="border:none;background:none;cursor:pointer;color:#ddd">✕</button></td>
-    </tr>
-  `).join('') + `<tr><td colspan="5" style="padding:10px"><button onclick="addLink()" style="border:none;background:none;cursor:pointer;color:#bbb;font-size:12px">+ Agregar link</button></td></tr>`;
-}
-
-function addLink() {
-  const id = Math.max(...STATE.links.map(t => t.id), 0) + 1;
-  STATE.links.push({ id, c: 'none', title: '', link: '', note: '' });
-  save();
-  drawLinks();
-}
-
-// MEETINGS
-function drawMeetings() {
-  const list = STATE.meetings;
-  const html = list.map(r => `
-    <div style="background:#fff;border:1px solid rgba(0,0,0,.09);border-radius:8px;padding:14px;margin-bottom:10px">
-      <div style="font-weight:700;margin-bottom:6px">${xe(r.title)}</div>
-      <div style="font-size:11px;color:#bbb;margin-bottom:8px">${fmtDate(r.date)} · ${xe(r.people)}</div>
-      <div style="font-size:12px;color:#555;line-height:1.5;white-space:pre-wrap">${xe(r.notes)}</div>
-      <button onclick="delItem('meetings', ${r.id})" style="margin-top:8px;border:none;background:none;cursor:pointer;color:#ddd;font-size:11px">Eliminar</button>
-    </div>
-  `).join('') + `<button onclick="addMeeting()" style="width:100%;padding:10px;border:1px dashed #ddd;background:none;cursor:pointer;color:#bbb;border-radius:6px;margin-top:10px">+ Nueva reunión</button>`;
-  document.getElementById('m-list').innerHTML = html || '<div style="color:#ccc">Sin reuniones</div>';
-}
-
-function addMeeting() {
-  const id = Math.max(...STATE.meetings.map(t => t.id), 0) + 1;
-  STATE.meetings.push({ id, title: '', date: today(), people: '', notes: '' });
-  save();
-  drawMeetings();
-}
-
-// COLOR PICKER
-let pickerState = { type: '', id: 0 };
-function pickColor(type, id) {
-  pickerState = { type, id };
-  const colors = Object.entries(COLORS).map(([k, v]) =>
-    `<div onclick="setColor('${k}')" style="padding:8px;background:${v.bg};color:#fff;cursor:pointer;border-radius:4px;margin-bottom:4px;font-size:11px">${v.label}</div>`
-  ).join('');
-  const modal = document.createElement('div');
-  modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.3);display:flex;align-items:center;justify-content:center;z-index:999';
-  modal.innerHTML = `<div style="background:#fff;border-radius:8px;padding:16px;width:200px"><div style="font-size:11px;font-weight:600;color:#aaa;margin-bottom:10px;text-transform:uppercase">Estado</div>${colors}</div>`;
-  modal.onclick = (e) => e.target === modal && modal.remove();
-  document.body.appendChild(modal);
-}
-
-function setColor(c) {
-  const item = STATE[pickerState.type].find(x => x.id === pickerState.id);
-  if (item) item.c = c;
-  save();
-  draw();
-  document.querySelector('[style*="position:fixed"]')?.remove();
-}
-
-// MAIN DRAW
-function draw() {
-  if (STATE.section === 'tasks') drawTasks();
-  if (STATE.section === 'people') drawPeople();
-  if (STATE.section === 'links') drawLinks();
-  if (STATE.section === 'meetings') drawMeetings();
-}
-
-// INIT UI
-window.addEventListener('DOMContentLoaded', () => {
-  draw();
-  document.getElementById('btn-add').onclick = () => {
-    if (STATE.section === 'tasks') addTask();
-    if (STATE.section === 'people') addPerson();
-    if (STATE.section === 'links') addLink();
-    if (STATE.section === 'meetings') addMeeting();
+  window.bwToggle=function(){
+    const p=document.getElementById('bw-panel');
+    p.classList.toggle('open');
+    if(p.classList.contains('open')&&!document.getElementById('bw-grid').children.length)buildGrid();
   };
-});
+  window.bwReset=buildGrid;
+
+  // Close on outside click
+  document.addEventListener('mousedown',function(e){
+    const p=document.getElementById('bw-panel');
+    const f=document.getElementById('bw-fab');
+    if(p.classList.contains('open')&&!p.contains(e.target)&&!f.contains(e.target))p.classList.remove('open');
+  });
+
+  buildGrid();
+})();
 </script>
 
 </body>
