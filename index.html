@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Central Management · Latin Securities</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f0efed;color:#1a1a1a;font-size:13px;min-height:100vh;overflow-x:hidden}
+
+/* TOPBAR */
+.topbar{background:#fff;border-bottom:1px solid rgba(0,0,0,.09);padding:10px 20px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:30}
+.topbar-left{display:flex;align-items:center;gap:10px}
+.tb-div{width:1px;height:18px;background:rgba(0,0,0,.1)}
+.logo{font-size:11px;font-weight:700;letter-spacing:.08em;color:#aaa;text-transform:uppercase}
+.logo b{color:#1a1a1a}
+.saved{font-size:10px;color:#bbb}
+.btn-primary{font-size:12px;padding:6px 15px;border-radius:6px;cursor:pointer;font-weight:500;border:1px solid #1a1a1a;background:#1a1a1a;color:#fff}
+.btn-primary:hover{background:#333}
+
+/* MOTIVATIONAL BAR */
+.motiv-bar{padding:0 20px;background:linear-gradient(135deg,#0a1f5c 0%,#1a3a8f 50%,#0a1f5c 100%);border-bottom:1px solid rgba(0,0,0,.15);height:38px;display:flex;align-items:center;overflow:hidden}
+.motiv-icon{font-size:13px;margin-right:10px;opacity:.8;flex-shrink:0}
+.motiv-text{font-size:12px;font-weight:500;color:rgba(255,255,255,.92);letter-spacing:.02em;white-space:nowrap;transition:opacity .5s,transform .5s}
+.motiv-text.fade-out{opacity:0;transform:translateY(-7px)}
+.motiv-text.fade-in{opacity:0;transform:translateY(7px)}
+
+/* SECTION SWITCHER */
+.switcher{display:flex;gap:0;background:#fff;border-bottom:1px solid rgba(0,0,0,.09);padding:0 20px}
+.sw-btn{font-size:12px;font-weight:500;padding:10px 18px;cursor:pointer;border:none;background:none;color:#999;border-bottom:2.5px solid transparent;transition:all .15s}
+.sw-btn:hover{color:#555}
+.sw-btn.active{color:#1a1a1a;border-bottom-color:#1a3a8f}
+
+/* FILTERS */
+.filters{padding:9px 20px;display:flex;gap:8px;align-items:center;background:#fff;border-bottom:1px solid rgba(0,0,0,.07);flex-wrap:wrap}
+.filters input{font-size:12px;padding:5px 10px;border:1px solid rgba(0,0,0,.15);border-radius:5px;background:#fff;color:#1a1a1a;width:200px;outline:none}
+.filters input:focus{border-color:#888}
+.fmode-btn{font-size:11px;color:#999;cursor:pointer;padding:3px 9px;border-radius:4px;border:1px solid transparent;white-space:nowrap;user-select:none}
+.fmode-btn:hover{border-color:#ddd;color:#555;background:#f8f8f8}
+.fmode-btn.on-include{border-color:#1a1a1a;color:#1a1a1a;background:#f5f5f5;font-weight:500}
+.fmode-btn.on-exclude{border-color:#E24B4A;color:#E24B4A;background:#fff5f5;font-weight:500}
+.fdots{display:flex;gap:6px;align-items:center}
+.fdot{width:13px;height:13px;border-radius:50%;cursor:pointer;border:2px solid transparent;opacity:.38;transition:transform .12s,opacity .12s}
+.fdot:hover{opacity:.7;transform:scale(1.15)}
+.fdot.sel-include{opacity:1;border-color:#1a1a1a;transform:scale(1.1)}
+.fdot.sel-exclude{opacity:1;border-color:#E24B4A;transform:scale(1.1)}
+.divider{width:1px;height:18px;background:rgba(0,0,0,.1);margin:0 2px;flex-shrink:0}
+.filter-tag{display:flex;align-items:center;gap:5px;font-size:11px;padding:3px 8px;border-radius:4px;background:#f0f0f0;color:#555}
+.ftdot{width:9px;height:9px;border-radius:50%;flex-shrink:0}
+.ft-x{cursor:pointer;color:#aaa;font-size:11px;margin-left:2px}
+.ft-x:hover{color:#E24B4A}
+.hint{font-size:10px;color:#c8c8c8;margin-left:auto}
+
+/* LEGEND */
+.legend{padding:6px 20px;display:flex;gap:14px;align-items:center;background:#fafaf9;border-bottom:1px solid rgba(0,0,0,.06)}
+.leg-item{display:flex;align-items:center;gap:5px;font-size:10px;color:#999}
+.leg-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0}
+
+/* TABLE SHARED */
+.main{padding:16px 20px}
+table{width:100%;border-collapse:collapse;background:#fff;border-radius:8px;overflow:hidden;border:1px solid rgba(0,0,0,.09);table-layout:fixed}
+thead tr{background:#f7f7f6;border-bottom:1.5px solid rgba(0,0,0,.1)}
+thead th{padding:7px 11px;text-align:left;font-size:10px;font-weight:600;color:#aaa;text-transform:uppercase;letter-spacing:.06em;user-select:none}
+tbody tr{border-bottom:1px solid rgba(0,0,0,.055)}
+tbody tr:last-child{border-bottom:none}
+td{padding:0;vertical-align:top;position:relative}
+
+/* TASK TABLE COLS */
+.t-col-drag{width:26px}.t-col-dot{width:28px}.t-col-title{width:20%}.t-col-desc{width:25%}.t-col-upd{width:41%}.t-col-date{width:68px}.t-col-del{width:26px}
+
+/* WRITE/FREE TABLE COLS */
+.w-col-drag{width:26px}.w-col-dot{width:28px}.w-col-name{width:26%}.w-col-topic{width:62%}.w-col-del{width:26px}
+.f-col-drag{width:26px}.f-col-dot{width:28px}.f-col-title{width:26%}.f-col-link{width:62%}.f-col-del{width:26px}
+
+/* CELLS */
+.cell-view{padding:8px 11px;line-height:1.55;min-height:36px;word-break:break-word;white-space:pre-wrap;cursor:default;color:#2a2a2a}
+.cell-view:hover{background:rgba(0,0,0,.02)}
+.t-col-title .cell-view{font-size:13px;font-weight:600;color:#1a1a1a}
+.t-col-desc .cell-view,.t-col-upd .cell-view{font-size:13px}
+/* big rows for write/free */
+.w-col-name .cell-view,.w-col-topic .cell-view,.f-col-title .cell-view,.f-col-link .cell-view{padding:13px 14px;font-size:14px;min-height:48px}
+.w-col-name .cell-view,.f-col-title .cell-view{font-weight:600;color:#1a1a1a}
+.cell-empty{color:#d0d0d0 !important;font-weight:400 !important}
+
+textarea.cell-ed{width:100%;padding:8px 11px;font-size:13px;font-family:inherit;line-height:1.55;border:none;outline:2px solid #378ADD;outline-offset:-2px;background:#fffef0;color:#1a1a1a;resize:none;overflow:hidden;min-height:36px;display:block;word-break:break-word}
+.t-col-title textarea.cell-ed{font-weight:600}
+.w-col-name textarea.cell-ed,.f-col-title textarea.cell-ed{padding:13px 14px;font-size:14px;min-height:48px;font-weight:600}
+.w-col-topic textarea.cell-ed,.f-col-link textarea.cell-ed{padding:13px 14px;font-size:14px;min-height:48px}
+
+.date-cell{padding:8px 6px;font-size:10px;color:#bbb;line-height:1.4;text-align:center}
+.date-lbl{font-size:9px;color:#d4d4d4;text-transform:uppercase;letter-spacing:.04em;display:block;margin-bottom:1px}
+
+/* ROW COLORS */
+.row-red td{background:#fff5f5}.row-amber td{background:#fffbf0}.row-blue td{background:#f0f7ff}.row-green td{background:#f4faed}.row-gray td{background:#f5f5f5}
+tbody tr:hover td{filter:brightness(.972)}
+tbody tr.dragging{opacity:.35}
+tbody tr.drag-over td{border-top:2px solid #378ADD !important}
+
+/* DOT */
+.dot-wrap{display:flex;align-items:flex-start;justify-content:center;padding-top:11px}
+.wdot-wrap{display:flex;align-items:flex-start;justify-content:center;padding-top:16px}
+.dot-btn{width:12px;height:12px;border-radius:50%;cursor:pointer;border:2px solid transparent;transition:transform .12s;display:block}
+.dot-btn:hover{transform:scale(1.4)}
+.dot-none{background:#d4d4d4}.dot-red{background:#E24B4A}.dot-amber{background:#EF9F27}.dot-blue{background:#378ADD}.dot-green{background:#639922}.dot-gray{background:#888}
+
+/* DRAG */
+.drag-handle{display:flex;align-items:flex-start;justify-content:center;padding-top:11px;cursor:grab;opacity:0;color:#bbb;font-size:14px;user-select:none}
+.wdrag-handle{display:flex;align-items:flex-start;justify-content:center;padding-top:16px;cursor:grab;opacity:0;color:#bbb;font-size:14px;user-select:none}
+.drag-handle:active,.wdrag-handle:active{cursor:grabbing}
+tbody tr:hover .drag-handle,tbody tr:hover .wdrag-handle{opacity:1}
+
+/* DELETE */
+.btn-del{display:block;width:100%;padding:11px 0;background:none;border:none;cursor:pointer;color:#d8d8d8;font-size:13px;text-align:center}
+.wbtn-del{display:block;width:100%;padding:16px 0;background:none;border:none;cursor:pointer;color:#d8d8d8;font-size:13px;text-align:center}
+.btn-del:hover,.wbtn-del:hover{color:#E24B4A}
+
+/* ADD ROW */
+.addrow td{border-top:1.5px dashed rgba(0,0,0,.09)}
+.addbtn{display:block;width:100%;padding:9px 11px;background:none;border:none;font-size:12px;color:#bbb;cursor:pointer;text-align:left;font-family:inherit}
+.waddbtn{display:block;width:100%;padding:12px 14px;background:none;border:none;font-size:13px;color:#bbb;cursor:pointer;text-align:left;font-family:inherit}
+.addbtn:hover,.waddbtn:hover{color:#888;background:#fafafa}
+
+/* LINK cell */
+.link-view{padding:13px 14px;font-size:14px;min-height:48px;word-break:break-all;line-height:1.45;cursor:default;color:#2a2a2a}
+.link-view:hover{background:rgba(0,0,0,.02)}
+.link-view a{color:#1a3a8f;text-decoration:none;font-weight:500}
+.link-view a:hover{text-decoration:underline}
+.link-view .link-note{font-size:12px;color:#666;margin-top:3px;white-space:pre-wrap;word-break:break-word}
+.link-view.empty{color:#d0d0d0;font-weight:400}
+
+/* FLOATING PICKER */
+#picker-float{position:fixed;background:#fff;border:1px solid rgba(0,0,0,.15);border-radius:9px;padding:10px 12px;z-index:999;box-shadow:0 6px 24px rgba(0,0,0,.15);min-width:170px;display:none}
+#picker-float.visible{display:block}
+.pk-title{font-size:9px;color:#bbb;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px;font-weight:600}
+.pk-opt{display:flex;align-items:center;gap:9px;cursor:pointer;padding:5px 7px;border-radius:5px;user-select:none}
+.pk-opt:hover{background:#f5f5f5}
+.pk-dot{width:11px;height:11px;border-radius:50%;flex-shrink:0}
+.pk-label{font-size:12px;color:#444}
+
+/* LINK MODAL */
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.3);display:flex;align-items:center;justify-content:center;z-index:100}
+.modal{background:#fff;border-radius:10px;padding:22px;width:460px;max-width:95vw;border:1px solid rgba(0,0,0,.12)}
+.modal h3{font-size:13px;font-weight:600;margin-bottom:14px;color:#1a1a1a}
+.modal label{font-size:10px;color:#888;display:block;margin-bottom:3px;text-transform:uppercase;letter-spacing:.04em;font-weight:500}
+.modal input,.modal textarea{width:100%;font-size:13px;padding:8px 10px;border:1px solid rgba(0,0,0,.15);border-radius:6px;background:#fff;color:#1a1a1a;margin-bottom:12px;outline:none;font-family:inherit}
+.modal input:focus,.modal textarea:focus{border-color:#888}
+.modal textarea{height:70px;resize:vertical}
+.modal-footer{display:flex;gap:8px;justify-content:flex-end}
+.btn-cancel{font-size:11px;padding:6px 14px;background:none;border:1px solid rgba(0,0,0,.15);border-radius:6px;cursor:pointer;color:#888}
+.btn-save{font-size:11px;padding:6px 14px;background:#1a1a1a;color:#fff;border:none;border-radius:6px;cursor:pointer;font-weight:500}
+
+/* MEETING NOTES */
+.mn-toolbar{padding:14px 20px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;background:#fff;border-bottom:1px solid rgba(0,0,0,.07)}
+.mn-search{font-size:12px;padding:6px 12px;border:1px solid rgba(0,0,0,.15);border-radius:6px;background:#fff;color:#1a1a1a;width:220px;outline:none}
+.mn-search:focus{border-color:#888}
+.mn-date-input{font-size:11px;padding:5px 10px;border:1px solid rgba(0,0,0,.15);border-radius:6px;background:#fff;color:#1a1a1a;outline:none;font-family:inherit}
+.mn-date-input:focus{border-color:#888}
+.mn-folder-pill{font-size:11px;padding:4px 13px;border-radius:20px;cursor:pointer;border:1.5px solid rgba(0,0,0,.12);background:#fff;color:#888;font-weight:400;transition:all .15s;user-select:none}
+.mn-folder-pill.active{font-weight:600;color:#fff}
+.mn-cards{display:flex;flex-direction:column;gap:10px}
+.mn-card{background:#fff;border-radius:10px;border:1px solid rgba(0,0,0,.09);overflow:hidden;transition:box-shadow .15s}
+.mn-card:hover{box-shadow:0 4px 18px rgba(0,0,0,.07)}
+.mn-card-header{padding:14px 18px;display:flex;align-items:center;gap:12px;cursor:pointer;user-select:none}
+.mn-card-header:hover{background:rgba(0,0,0,.015)}
+.mn-card-arrow{font-size:11px;color:#bbb;transition:transform .2s;flex-shrink:0}
+.mn-card-arrow.open{transform:rotate(90deg)}
+.mn-card-folder{font-size:10px;font-weight:600;padding:2px 10px;border-radius:20px;letter-spacing:.04em;flex-shrink:0}
+.mn-card-title{font-size:14px;font-weight:700;color:#1a1a1a;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.mn-card-date{font-size:11px;color:#aaa;flex-shrink:0;white-space:nowrap}
+.mn-card-people{font-size:11px;color:#bbb;flex-shrink:0;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.mn-card-del{background:none;border:none;cursor:pointer;color:#ddd;font-size:12px;padding:2px 4px;flex-shrink:0}
+.mn-card-del:hover{color:#E24B4A}
+.mn-card-body{display:none;border-top:1px solid rgba(0,0,0,.06);padding:16px 18px}
+.mn-card-body.open{display:block}
+.mn-body-row{margin-bottom:12px}
+.mn-body-label{font-size:10px;color:#999;text-transform:uppercase;letter-spacing:.05em;font-weight:600;margin-bottom:4px}
+.mn-body-field{font-size:13px;color:#2a2a2a;line-height:1.6;white-space:pre-wrap;word-break:break-word;min-height:20px;padding:6px 10px;border-radius:6px;cursor:text;border:1px solid transparent;transition:border-color .15s}
+.mn-body-field:hover{border-color:rgba(0,0,0,.08)}
+.mn-body-field.empty{color:#d0d0d0;font-style:italic}
+.mn-body-textarea{width:100%;font-size:13px;font-family:inherit;line-height:1.6;border:none;outline:2px solid #378ADD;outline-offset:-2px;background:#fffef0;color:#1a1a1a;resize:none;overflow:hidden;padding:6px 10px;border-radius:6px;min-height:60px}
+.mn-body-input{width:100%;font-size:13px;font-family:inherit;padding:6px 10px;border:none;outline:2px solid #378ADD;outline-offset:-2px;background:#fffef0;color:#1a1a1a;border-radius:6px}
+.mn-body-input-date{font-size:13px;font-family:inherit;padding:6px 10px;border:none;outline:2px solid #378ADD;outline-offset:-2px;background:#fffef0;color:#1a1a1a;border-radius:6px}
+.mn-folder-tags{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px;padding-top:10px;border-top:1px solid rgba(0,0,0,.06)}
+.mn-folder-tag{font-size:10px;padding:2px 9px;border-radius:10px;cursor:pointer;transition:all .12s}
+.mn-empty{text-align:center;padding:60px 20px;color:#ccc;font-size:13px}
+.mn-add-btn{display:block;width:100%;padding:12px 18px;background:none;border:1.5px dashed rgba(0,0,0,.09);border-radius:10px;font-size:13px;color:#bbb;cursor:pointer;text-align:left;font-family:inherit;margin-top:6px;transition:all .15s}
+.mn-add-btn:hover{color:#888;background:#fafafa;border-color:rgba(0,0,0,.15)}
+
+/* BUBBLE WRAP */
+#bw-fab{position:fixed;bottom:18px;right:18px;z-index:50;width:52px;height:52px;border-radius:50%;background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;border:none;cursor:pointer;font-size:22px;box-shadow:0 4px 18px rgba(102,126,234,.45);transition:transform .2s,box-shadow .2s;display:flex;align-items:center;justify-content:center}
+#bw-fab:hover{transform:scale(1.12);box-shadow:0 6px 24px rgba(102,126,234,.6)}
+#bw-fab:active{transform:scale(.95)}
+#bw-panel{position:fixed;bottom:80px;right:18px;z-index:50;width:320px;background:#fff;border-radius:14px;border:1px solid rgba(0,0,0,.1);box-shadow:0 12px 48px rgba(0,0,0,.18);display:none;overflow:hidden;animation:bwSlide .25s ease}
+@keyframes bwSlide{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+#bw-panel.open{display:block}
+.bw-header{padding:14px 16px 10px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid rgba(0,0,0,.06)}
+.bw-title{font-size:14px;font-weight:700;color:#1a1a1a}
+.bw-score{font-size:11px;color:#764ba2;font-weight:600;letter-spacing:.03em}
+.bw-grid{display:grid;grid-template-columns:repeat(8,1fr);gap:4px;padding:14px}
+.bw-bubble{aspect-ratio:1;border-radius:50%;background:radial-gradient(circle at 35% 35%,rgba(255,255,255,.8),rgba(102,126,234,.25) 40%,rgba(118,75,162,.3));border:1.5px solid rgba(102,126,234,.3);cursor:pointer;transition:transform .1s,background .15s;position:relative;overflow:hidden}
+.bw-bubble:hover{transform:scale(1.1);border-color:rgba(102,126,234,.5)}
+.bw-bubble:active{transform:scale(.85)}
+.bw-bubble.popped{background:rgba(0,0,0,.04);border-color:rgba(0,0,0,.06);cursor:default;transform:scale(.88)}
+.bw-bubble.popped::after{content:'';position:absolute;inset:0;background:none}
+.bw-pop{position:absolute;pointer-events:none;font-size:16px;animation:bwPopAnim .5s ease forwards}
+@keyframes bwPopAnim{0%{opacity:1;transform:scale(1) translateY(0)}100%{opacity:0;transform:scale(1.5) translateY(-18px)}}
+.bw-footer{padding:8px 16px 12px;display:flex;align-items:center;justify-content:space-between;border-top:1px solid rgba(0,0,0,.06)}
+.bw-reset{font-size:11px;color:#764ba2;cursor:pointer;font-weight:500;background:none;border:none;padding:4px 10px;border-radius:6px}
+.bw-reset:hover{background:rgba(118,75,162,.08)}
+.bw-msg{font-size:10px;color:#bbb;font-style:italic}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-left">
+    <svg width="26" height="26" viewBox="0 0 100 100" style="opacity:.85" fill="currentColor"><rect x="10" y="10" width="35" height="35" fill="#1a3a8f"/><rect x="55" y="10" width="35" height="35" fill="#0e7490"/><rect x="10" y="55" width="35" height="35" fill="#d97706"/><rect x="55" y="55" width="35" height="35" fill="#059669"/></svg>
+    <div class="tb-div"></div><div class="logo"><b>CENTRAL MANAGEMENT</b></div>
+  </div>
+  <div style="display:flex;gap:8px;align-items:center">
+    <span class="saved" id="sv"></span>
+    <button class="btn-primary" id="btn-add" onclick="addRow()">+ Nueva tarea</button>
+  </div>
+</div>
+
+<div class="motiv-bar">
+  <span class="motiv-icon" id="motiv-icon">✦</span>
+  <span class="motiv-text" id="motiv-text"></span>
+</div>
+
+<div class="switcher">
+  <button class="sw-btn active" id="sw-tasks" onclick="switchTo('tasks')">✅ Central Management</button>
+  <button class="sw-btn" id="sw-write" onclick="switchTo('write')">💬 A Escribir</button>
+  <button class="sw-btn" id="sw-free" onclick="switchTo('free')">◆ Tiempo Libre</button>
+  <button class="sw-btn" id="sw-meet" onclick="switchTo('meet')">📋 Reuniones</button>
+  <button class="sw-btn" id="sw-claude" onclick="switchTo('claude')">✦ Claude</button>
+</div>
+
+<!-- TASK TRACKER -->
+<div id="sec-tasks">
+  <div class="filters">
+    <input type="text" id="t-search" placeholder="Buscar..." oninput="tDraw()">
+    <span class="fmode-btn on-include" id="t-btn-all" onclick="tSetMode('all')">Todas</span>
+    <span class="fmode-btn" id="t-btn-include" onclick="tSetMode('include')">Solo</span>
+    <span class="fmode-btn" id="t-btn-exclude" onclick="tSetMode('exclude')">Todas menos</span>
+    <div class="divider"></div>
+    <div class="fdots" id="t-dots"></div>
+    <span class="hint">Doble clic para editar · Arrastrar ⠿ para ordenar</span>
+  </div>
+  <div class="legend">
+    <div class="leg-item"><div class="leg-dot" style="background:#E24B4A"></div>Urgente</div>
+    <div class="leg-item"><div class="leg-dot" style="background:#EF9F27"></div>En proceso</div>
+    <div class="leg-item"><div class="leg-dot" style="background:#378ADD"></div>Esperando</div>
+    <div class="leg-item"><div class="leg-dot" style="background:#639922"></div>Listo / OK</div>
+    <div class="leg-item"><div class="leg-dot" style="background:#888"></div>Cerrado</div>
+  </div>
+  <div class="main">
+    <table>
+      <thead><tr>
+        <th class="t-col-drag"></th><th class="t-col-dot"></th>
+        <th class="t-col-title">Título</th>
+        <th class="t-col-desc">Descripción</th>
+        <th class="t-col-upd">Estado / Seguimiento</th>
+        <th class="t-col-date" style="text-align:center">Creado</th>
+        <th class="t-col-del"></th>
+      </tr></thead>
+      <tbody id="t-body"></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- A ESCRIBIR -->
+<div id="sec-write" style="display:none">
+  <div class="filters">
+    <input type="text" id="w-search" placeholder="Buscar..." oninput="wDraw()">
+    <span class="fmode-btn on-include" id="w-btn-all" onclick="wSetMode('all')">Todas</span>
+    <span class="fmode-btn" id="w-btn-include" onclick="wSetMode('include')">Solo</span>
+    <span class="fmode-btn" id="w-btn-exclude" onclick="wSetMode('exclude')">Todas menos</span>
+    <div class="divider"></div>
+    <div class="fdots" id="w-dots"></div>
+    <span class="hint">Doble clic para editar</span>
+  </div>
+  <div class="legend">
+    <div class="leg-item"><div class="leg-dot" style="background:#E24B4A"></div>Urgente</div>
+    <div class="leg-item"><div class="leg-dot" style="background:#EF9F27"></div>En proceso</div>
+    <div class="leg-item"><div class="leg-dot" style="background:#378ADD"></div>Esperando</div>
+    <div class="leg-item"><div class="leg-dot" style="background:#639922"></div>Listo / OK</div>
+  </div>
+  <div class="main">
+    <table>
+      <thead><tr>
+        <th class="w-col-drag"></th><th class="w-col-dot"></th>
+        <th class="w-col-name">Nombre</th>
+        <th class="w-col-topic">Tema</th>
+        <th class="w-col-del"></th>
+      </tr></thead>
+      <tbody id="w-body"></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- TIEMPO LIBRE -->
+<div id="sec-free" style="display:none">
+  <div class="filters">
+    <input type="text" id="f-search" placeholder="Buscar..." oninput="fDraw()">
+    <span class="fmode-btn on-include" id="f-btn-all" onclick="fSetMode('all')">Todas</span>
+    <span class="fmode-btn" id="f-btn-include" onclick="fSetMode('include')">Solo</span>
+    <span class="fmode-btn" id="f-btn-exclude" onclick="fSetMode('exclude')">Todas menos</span>
+    <div class="divider"></div>
+    <div class="fdots" id="f-dots"></div>
+    <span class="hint">Doble clic en título · Clic en link para abrir</span>
+  </div>
+  <div class="legend">
+    <div class="leg-item"><div class="leg-dot" style="background:#E24B4A"></div>Pendiente leer</div>
+    <div class="leg-item"><div class="leg-dot" style="background:#EF9F27"></div>Leyendo</div>
+    <div class="leg-item"><div class="leg-dot" style="background:#378ADD"></div>Interesante</div>
+    <div class="leg-item"><div class="leg-dot" style="background:#639922"></div>Leído</div>
+  </div>
+  <div class="main">
+    <table>
+      <thead><tr>
+        <th class="f-col-drag"></th><th class="f-col-dot"></th>
+        <th class="f-col-title">Título / Descripción</th>
+        <th class="f-col-link">Link</th>
+        <th class="f-col-del"></th>
+      </tr></thead>
+      <tbody id="f-body"></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- REUNIONES -->
+<div id="sec-meet" style="display:none">
+  <div style="padding:16px 20px 0;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px">
+    <div>
+      <div style="font-size:15px;font-weight:700;color:#1a1a1a;margin-bottom:2px">📋 Notas de Reuniones</div>
+      <div style="font-size:11px;color:#bbb">Tu base de datos de reuniones por carpeta.</div>
+    </div>
+    <button class="btn-primary" onclick="mAddMeeting()" style="font-size:11px;padding:5px 13px">+ Nueva reunión</button>
+  </div>
+  <div style="padding:12px 20px 0;display:flex;gap:8px;flex-wrap:wrap" id="m-folders"></div>
+  <div class="mn-toolbar">
+    <input type="text" class="mn-search" id="m-search" placeholder="Buscar..." oninput="mDraw()">
+    <span class="hint" style="margin-left:auto" id="m-count"></span>
+  </div>
+  <div class="main" style="padding:16px 20px">
+    <div class="mn-cards" id="m-list"></div>
+  </div>
+</div>
+
+<!-- CLAUDE -->
+<div id="sec-claude" style="display:none">
+  <div style="padding:20px 20px 0;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px">
+    <div>
+      <div style="font-size:15px;font-weight:700;color:#1a1a1a;margin-bottom:2px">✦ Ideas & usos de Claude</div>
+      <div style="font-size:11px;color:#bbb">Tu diario personal de prompts e ideas.</div>
+    </div>
+    <button class="btn-primary" onclick="nAddCard()" style="font-size:11px;padding:5px 13px">+ Nueva nota</button>
+  </div>
+  <div style="padding:12px 20px 0;display:flex;gap:8px;flex-wrap:wrap" id="n-cats"></div>
+  <div class="main" style="padding:16px 20px">
+    <div id="n-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px"></div>
+  </div>
+</div>
+
+<div id="picker-float">
+  <div class="pk-title">Estado</div>
+  <div id="pk-opts"></div>
+</div>
+
+<div id="modal-root"></div>
+<button id="bw-fab" onclick="bwToggle()" title="Sacate el estrés">💥</button>
+<div id="bw-panel">
+  <div class="bw-header">
+    <span class="bw-title">Bubble Wrap</span>
+    <span class="bw-score" id="bw-score">0 / 48</span>
+  </div>
+  <div class="bw-grid" id="bw-grid"></div>
+  <div class="bw-footer">
+    <button class="bw-reset" onclick="bwReset()">Nuevo plástico</button>
+    <span class="bw-msg" id="bw-msg">Hacé clic para reventar</span>
+  </div>
+</div>
+
+<script>
+// DATOS Y ALMACENAMIENTO
+const STORAGE_KEY = 'task_tracker_data';
+const COLORS = {
+  none: { bg: '#d4d4d4', label: 'Sin estado' },
+  red: { bg: '#E24B4A', label: 'Urgente' },
+  amber: { bg: '#EF9F27', label: 'En proceso' },
+  blue: { bg: '#378ADD', label: 'Esperando' },
+  green: { bg: '#639922', label: 'Listo / OK' },
+  gray: { bg: '#888', label: 'Cerrado' }
+};
+
+const STATE = {
+  section: 'tasks',
+  tasks: [],
+  people: [],
+  links: [],
+  meetings: []
+};
+
+// LOAD / SAVE
+function load() {
+  const data = localStorage.getItem(STORAGE_KEY);
+  if (data) Object.assign(STATE, JSON.parse(data));
+}
+
+function save() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(STATE));
+  const el = document.getElementById('sv');
+  if (el) {
+    el.textContent = '✓ Guardado';
+    setTimeout(() => el.textContent = '', 2000);
+  }
+}
+
+// HELPERS
+function xe(s) { return String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;') }
+function today() { return new Date().toISOString().slice(0, 10) }
+function fmtDate(s) {
+  if (!s) return '—';
+  const [, m, d] = s.split('-');
+  const months = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic'];
+  return `${parseInt(d)} ${months[parseInt(m) - 1]}`;
+}
+
+// INIT
+load();
+if (!STATE.tasks.length) {
+  STATE.tasks = [
+    { id: 1, c: 'red', t: 'Migración base de datos', d: 'De MySQL a Postgres', u: 'En progreso', cr: '2026-03-10' },
+    { id: 2, c: 'amber', t: 'Campaña Q2', d: 'Definir objetivos y presupuesto', u: 'Pendiente reunión', cr: '2026-03-11' },
+    { id: 3, c: 'blue', t: 'Contratos proveedores', d: 'Revisar cláusulas regulatorias', u: 'Espera abogado', cr: '2026-03-11' }
+  ];
+  STATE.people = [
+    { id: 1, c: 'red', name: 'Matías López', topic: 'Documentos auditoría' },
+    { id: 2, c: 'amber', name: 'Clara Ruiz', topic: 'Reunión agencia' }
+  ];
+  STATE.links = [
+    { id: 1, c: 'red', title: 'Thread tasas Fed', link: 'https://twitter.com/example', note: 'Research renta fija' }
+  ];
+  save();
+}
+
+// UI - CAMBIAR SECCIÓN
+function switchSection(sec) {
+  STATE.section = sec;
+  document.querySelectorAll('[data-sec]').forEach(el => el.style.display = 'none');
+  document.getElementById('sec-' + sec).style.display = '';
+  document.querySelectorAll('.sw-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('sw-' + sec).classList.add('active');
+  draw();
+}
+
+// TASKS
+function drawTasks() {
+  const list = STATE.tasks;
+  const tbody = document.getElementById('t-body');
+  tbody.innerHTML = list.map(r => `
+    <tr style="background:${r.c === 'red' ? '#fff5f5' : r.c === 'amber' ? '#fffbf0' : r.c === 'blue' ? '#f0f7ff' : r.c === 'green' ? '#f4faed' : 'inherit'}">
+      <td style="width:20px;padding:8px"><div style="width:12px;height:12px;border-radius:50%;background:${COLORS[r.c].bg};cursor:pointer" onclick="pickColor('tasks', ${r.id})"></div></td>
+      <td style="padding:8px;font-weight:600">${xe(r.t)}</td>
+      <td style="padding:8px">${xe(r.d)}</td>
+      <td style="padding:8px">${xe(r.u)}</td>
+      <td style="padding:8px;font-size:10px;color:#aaa">${fmtDate(r.cr)}</td>
+      <td style="padding:8px"><button onclick="delItem('tasks', ${r.id})" style="border:none;background:none;cursor:pointer;color:#ddd">✕</button></td>
+    </tr>
+  `).join('') + `<tr><td colspan="6" style="padding:10px"><button onclick="addTask()" style="border:none;background:none;cursor:pointer;color:#bbb;font-size:12px">+ Nueva tarea</button></td></tr>`;
+}
+
+function addTask() {
+  const id = Math.max(...STATE.tasks.map(t => t.id), 0) + 1;
+  STATE.tasks.push({ id, c: 'none', t: '', d: '', u: '', cr: today() });
+  save();
+  drawTasks();
+}
+
+function delItem(sec, id) {
+  if (!confirm('¿Eliminar?')) return;
+  STATE[sec] = STATE[sec].filter(r => r.id !== id);
+  save();
+  draw();
+}
+
+// PEOPLE
+function drawPeople() {
+  const tbody = document.getElementById('w-body');
+  tbody.innerHTML = STATE.people.map(r => `
+    <tr style="background:${r.c === 'red' ? '#fff5f5' : r.c === 'amber' ? '#fffbf0' : 'inherit'}">
+      <td style="width:20px;padding:10px"><div style="width:12px;height:12px;border-radius:50%;background:${COLORS[r.c].bg};cursor:pointer" onclick="pickColor('people', ${r.id})"></div></td>
+      <td style="padding:10px;font-weight:600">${xe(r.name)}</td>
+      <td style="padding:10px">${xe(r.topic)}</td>
+      <td style="padding:10px"><button onclick="delItem('people', ${r.id})" style="border:none;background:none;cursor:pointer;color:#ddd">✕</button></td>
+    </tr>
+  `).join('') + `<tr><td colspan="4" style="padding:10px"><button onclick="addPerson()" style="border:none;background:none;cursor:pointer;color:#bbb;font-size:12px">+ Agregar persona</button></td></tr>`;
+}
+
+function addPerson() {
+  const id = Math.max(...STATE.people.map(t => t.id), 0) + 1;
+  STATE.people.push({ id, c: 'none', name: '', topic: '' });
+  save();
+  drawPeople();
+}
+
+// LINKS
+function drawLinks() {
+  const tbody = document.getElementById('f-body');
+  tbody.innerHTML = STATE.links.map(r => `
+    <tr style="background:${r.c === 'red' ? '#fff5f5' : r.c === 'amber' ? '#fffbf0' : 'inherit'}">
+      <td style="width:20px;padding:10px"><div style="width:12px;height:12px;border-radius:50%;background:${COLORS[r.c].bg};cursor:pointer" onclick="pickColor('links', ${r.id})"></div></td>
+      <td style="padding:10px;font-weight:600">${xe(r.title)}</td>
+      <td style="padding:10px"><a href="${xe(r.link)}" target="_blank" style="color:#1a3a8f;text-decoration:none">${xe(r.link.slice(0, 40))}...</a></td>
+      <td style="padding:10px;font-size:11px;color:#666">${xe(r.note)}</td>
+      <td style="padding:10px"><button onclick="delItem('links', ${r.id})" style="border:none;background:none;cursor:pointer;color:#ddd">✕</button></td>
+    </tr>
+  `).join('') + `<tr><td colspan="5" style="padding:10px"><button onclick="addLink()" style="border:none;background:none;cursor:pointer;color:#bbb;font-size:12px">+ Agregar link</button></td></tr>`;
+}
+
+function addLink() {
+  const id = Math.max(...STATE.links.map(t => t.id), 0) + 1;
+  STATE.links.push({ id, c: 'none', title: '', link: '', note: '' });
+  save();
+  drawLinks();
+}
+
+// MEETINGS
+function drawMeetings() {
+  const list = STATE.meetings;
+  const html = list.map(r => `
+    <div style="background:#fff;border:1px solid rgba(0,0,0,.09);border-radius:8px;padding:14px;margin-bottom:10px">
+      <div style="font-weight:700;margin-bottom:6px">${xe(r.title)}</div>
+      <div style="font-size:11px;color:#bbb;margin-bottom:8px">${fmtDate(r.date)} · ${xe(r.people)}</div>
+      <div style="font-size:12px;color:#555;line-height:1.5;white-space:pre-wrap">${xe(r.notes)}</div>
+      <button onclick="delItem('meetings', ${r.id})" style="margin-top:8px;border:none;background:none;cursor:pointer;color:#ddd;font-size:11px">Eliminar</button>
+    </div>
+  `).join('') + `<button onclick="addMeeting()" style="width:100%;padding:10px;border:1px dashed #ddd;background:none;cursor:pointer;color:#bbb;border-radius:6px;margin-top:10px">+ Nueva reunión</button>`;
+  document.getElementById('m-list').innerHTML = html || '<div style="color:#ccc">Sin reuniones</div>';
+}
+
+function addMeeting() {
+  const id = Math.max(...STATE.meetings.map(t => t.id), 0) + 1;
+  STATE.meetings.push({ id, title: '', date: today(), people: '', notes: '' });
+  save();
+  drawMeetings();
+}
+
+// COLOR PICKER
+let pickerState = { type: '', id: 0 };
+function pickColor(type, id) {
+  pickerState = { type, id };
+  const colors = Object.entries(COLORS).map(([k, v]) =>
+    `<div onclick="setColor('${k}')" style="padding:8px;background:${v.bg};color:#fff;cursor:pointer;border-radius:4px;margin-bottom:4px;font-size:11px">${v.label}</div>`
+  ).join('');
+  const modal = document.createElement('div');
+  modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.3);display:flex;align-items:center;justify-content:center;z-index:999';
+  modal.innerHTML = `<div style="background:#fff;border-radius:8px;padding:16px;width:200px"><div style="font-size:11px;font-weight:600;color:#aaa;margin-bottom:10px;text-transform:uppercase">Estado</div>${colors}</div>`;
+  modal.onclick = (e) => e.target === modal && modal.remove();
+  document.body.appendChild(modal);
+}
+
+function setColor(c) {
+  const item = STATE[pickerState.type].find(x => x.id === pickerState.id);
+  if (item) item.c = c;
+  save();
+  draw();
+  document.querySelector('[style*="position:fixed"]')?.remove();
+}
+
+// MAIN DRAW
+function draw() {
+  if (STATE.section === 'tasks') drawTasks();
+  if (STATE.section === 'people') drawPeople();
+  if (STATE.section === 'links') drawLinks();
+  if (STATE.section === 'meetings') drawMeetings();
+}
+
+// INIT UI
+window.addEventListener('DOMContentLoaded', () => {
+  draw();
+  document.getElementById('btn-add').onclick = () => {
+    if (STATE.section === 'tasks') addTask();
+    if (STATE.section === 'people') addPerson();
+    if (STATE.section === 'links') addLink();
+    if (STATE.section === 'meetings') addMeeting();
+  };
+});
+</script>
+
+</body>
+</html>
