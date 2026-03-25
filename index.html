@@ -66,7 +66,7 @@ tbody tr:last-child{border-bottom:none}
 td{padding:0;vertical-align:top;position:relative}
 
 /* TASK TABLE COLS */
-.t-col-drag{width:26px}.t-col-dot{width:28px}.t-col-title{width:20%}.t-col-desc{width:25%}.t-col-upd{width:41%}.t-col-date{width:68px}.t-col-del{width:26px}
+.t-col-drag{width:26px}.t-col-dot{width:28px}.t-col-title{width:20%}.t-col-desc{width:25%}.t-col-upd{width:38%}.t-col-date{width:68px}.t-col-done{width:34px}.t-col-del{width:26px}
 
 /* WRITE/FREE TABLE COLS */
 .w-col-drag{width:26px}.w-col-dot{width:28px}.w-col-name{width:26%}.w-col-topic{width:62%}.w-col-del{width:26px}
@@ -91,7 +91,7 @@ textarea.cell-ed{width:100%;padding:8px 11px;font-size:13px;font-family:inherit;
 .date-lbl{font-size:9px;color:#d4d4d4;text-transform:uppercase;letter-spacing:.04em;display:block;margin-bottom:1px}
 
 /* ROW COLORS */
-.row-red td{background:#fff5f5}.row-amber td{background:#fffbf0}.row-blue td{background:#f0f7ff}.row-green td{background:#f4faed}.row-gray td{background:#f5f5f5}
+.row-red td{background:#fde4e4}.row-amber td{background:#fef0c4}.row-blue td{background:#d6eeff}.row-violet td{background:#ede9fe}.row-green td{background:#d4f5ca}.row-gray td{background:#e4e4e4}
 tbody tr:hover td{filter:brightness(.972)}
 tbody tr.dragging{opacity:.35}
 tbody tr.drag-over td{border-top:2px solid #378ADD !important}
@@ -101,7 +101,7 @@ tbody tr.drag-over td{border-top:2px solid #378ADD !important}
 .wdot-wrap{display:flex;align-items:flex-start;justify-content:center;padding-top:16px}
 .dot-btn{width:12px;height:12px;border-radius:50%;cursor:pointer;border:2px solid transparent;transition:transform .12s;display:block}
 .dot-btn:hover{transform:scale(1.4)}
-.dot-none{background:#d4d4d4}.dot-red{background:#E24B4A}.dot-amber{background:#EF9F27}.dot-blue{background:#378ADD}.dot-green{background:#639922}.dot-gray{background:#888}
+.dot-none{background:#d4d4d4}.dot-red{background:#E24B4A}.dot-amber{background:#EF9F27}.dot-blue{background:#378ADD}.dot-violet{background:#7C3AED}.dot-green{background:#639922}.dot-gray{background:#888}
 
 /* DRAG */
 .drag-handle{display:flex;align-items:flex-start;justify-content:center;padding-top:11px;cursor:grab;opacity:0;color:#bbb;font-size:14px;user-select:none}
@@ -113,6 +113,22 @@ tbody tr:hover .drag-handle,tbody tr:hover .wdrag-handle{opacity:1}
 .btn-del{display:block;width:100%;padding:11px 0;background:none;border:none;cursor:pointer;color:#d8d8d8;font-size:13px;text-align:center}
 .wbtn-del{display:block;width:100%;padding:16px 0;background:none;border:none;cursor:pointer;color:#d8d8d8;font-size:13px;text-align:center}
 .btn-del:hover,.wbtn-del:hover{color:#E24B4A}
+
+/* DONE BUTTON + COMPLETED PANEL */
+.btn-done{display:block;width:100%;padding:11px 0;background:none;border:none;cursor:pointer;color:#d0d0d0;font-size:16px;text-align:center;line-height:1;font-weight:700}
+.btn-done:hover{color:#22c55e}
+.btn-undone{display:block;width:100%;padding:11px 0;background:none;border:none;cursor:pointer;color:#22c55e;font-size:13px;text-align:center}
+.btn-undone:hover{color:#16a34a}
+.row-done td{background:#fafaf9 !important}
+.row-done .cell-view{opacity:.5;text-decoration:line-through;text-decoration-color:rgba(0,0,0,.2)}
+.row-done .date-cell{opacity:.4}
+.completed-panel{margin:12px 20px 16px;border:1px solid rgba(0,0,0,.08);border-radius:8px;overflow:hidden;background:#fff}
+.completed-hdr{padding:10px 14px;display:flex;align-items:center;gap:8px;cursor:pointer;background:#f9f9f7;user-select:none}
+.completed-hdr:hover{background:#f5f5f3}
+.completed-hdr-label{font-size:11px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:.06em;flex:1}
+.completed-hdr-count{font-size:11px;color:#22c55e;font-weight:700}
+.completed-hdr-arrow{font-size:10px;color:#bbb;transition:transform .2s;display:inline-block}
+.completed-hdr-arrow.open{transform:rotate(180deg)}
 
 /* ADD ROW */
 .addrow td{border-top:1.5px dashed rgba(0,0,0,.09)}
@@ -217,10 +233,6 @@ tbody tr:hover .drag-handle,tbody tr:hover .wdrag-handle{opacity:1}
 <div id="sec-tasks">
   <div class="filters">
     <input type="text" id="t-search" placeholder="Buscar..." oninput="tDraw()">
-    <span class="fmode-btn on-include" id="t-btn-all"     onclick="tSetMode('all')">Todas</span>
-    <span class="fmode-btn"            id="t-btn-include" onclick="tSetMode('include')">Solo</span>
-    <span class="fmode-btn"            id="t-btn-exclude" onclick="tSetMode('exclude')">Todas menos</span>
-    <div class="divider"></div>
     <div class="fdots" id="t-dots"></div>
     <div id="t-tag" style="display:none"></div>
     <span class="hint">Doble clic para editar · Arrastrar ⠿ para ordenar</span>
@@ -229,6 +241,7 @@ tbody tr:hover .drag-handle,tbody tr:hover .wdrag-handle{opacity:1}
     <div class="leg-item"><div class="leg-dot" style="background:#E24B4A"></div>Urgente</div>
     <div class="leg-item"><div class="leg-dot" style="background:#EF9F27"></div>En proceso</div>
     <div class="leg-item"><div class="leg-dot" style="background:#378ADD"></div>Esperando</div>
+    <div class="leg-item"><div class="leg-dot" style="background:#7C3AED"></div>A revisar</div>
     <div class="leg-item"><div class="leg-dot" style="background:#639922"></div>Listo / OK</div>
     <div class="leg-item"><div class="leg-dot" style="background:#888"></div>Cerrado</div>
     <div class="leg-item"><div class="leg-dot" style="background:#d4d4d4"></div>Sin estado</div>
@@ -241,6 +254,7 @@ tbody tr:hover .drag-handle,tbody tr:hover .wdrag-handle{opacity:1}
         <th class="t-col-desc">Descripción</th>
         <th class="t-col-upd">Estado / Seguimiento</th>
         <th class="t-col-date" style="text-align:center">Creado</th>
+        <th class="t-col-done"></th>
         <th class="t-col-del"></th>
       </tr></thead>
       <tbody id="t-body"></tbody>
@@ -252,10 +266,6 @@ tbody tr:hover .drag-handle,tbody tr:hover .wdrag-handle{opacity:1}
 <div id="sec-write" style="display:none">
   <div class="filters">
     <input type="text" id="w-search" placeholder="Buscar..." oninput="wDraw()">
-    <span class="fmode-btn on-include" id="w-btn-all"     onclick="wSetMode('all')">Todas</span>
-    <span class="fmode-btn"            id="w-btn-include" onclick="wSetMode('include')">Solo</span>
-    <span class="fmode-btn"            id="w-btn-exclude" onclick="wSetMode('exclude')">Todas menos</span>
-    <div class="divider"></div>
     <div class="fdots" id="w-dots"></div>
     <div id="w-tag" style="display:none"></div>
     <span class="hint">Doble clic para editar</span>
@@ -284,10 +294,6 @@ tbody tr:hover .drag-handle,tbody tr:hover .wdrag-handle{opacity:1}
 <div id="sec-free" style="display:none">
   <div class="filters">
     <input type="text" id="f-search" placeholder="Buscar..." oninput="fDraw()">
-    <span class="fmode-btn on-include" id="f-btn-all"     onclick="fSetMode('all')">Todas</span>
-    <span class="fmode-btn"            id="f-btn-include" onclick="fSetMode('include')">Solo</span>
-    <span class="fmode-btn"            id="f-btn-exclude" onclick="fSetMode('exclude')">Todas menos</span>
-    <div class="divider"></div>
     <div class="fdots" id="f-dots"></div>
     <div id="f-tag" style="display:none"></div>
     <span class="hint">Doble clic en título · Clic en link para abrir</span>
@@ -370,11 +376,11 @@ tbody tr:hover .drag-handle,tbody tr:hover .wdrag-handle{opacity:1}
 <div id="modal-root"></div>
 
 <script>
-const COLS=['none','red','amber','blue','green','gray'];
-const DC={none:'dot-none',red:'dot-red',amber:'dot-amber',blue:'dot-blue',green:'dot-green',gray:'dot-gray'};
-const RC={none:'',red:'row-red',amber:'row-amber',blue:'row-blue',green:'row-green',gray:'row-gray'};
-const CL={none:'Sin estado',red:'Urgente',amber:'En proceso',blue:'Esperando',green:'Listo / OK',gray:'Cerrado'};
-const DOTBG={none:'#d4d4d4',red:'#E24B4A',amber:'#EF9F27',blue:'#378ADD',green:'#639922',gray:'#888'};
+const COLS=['none','red','amber','blue','violet','green','gray'];
+const DC={none:'dot-none',red:'dot-red',amber:'dot-amber',blue:'dot-blue',violet:'dot-violet',green:'dot-green',gray:'dot-gray'};
+const RC={none:'',red:'row-red',amber:'row-amber',blue:'row-blue',violet:'row-violet',green:'row-green',gray:'row-gray'};
+const CL={none:'Sin estado',red:'Urgente',amber:'En proceso',blue:'Esperando',violet:'A revisar',green:'Listo / OK',gray:'Cerrado'};
+const DOTBG={none:'#d4d4d4',red:'#E24B4A',amber:'#EF9F27',blue:'#378ADD',violet:'#7C3AED',green:'#639922',gray:'#888'};
 
 function xe(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
 function as(el){el.style.height='auto';el.style.height=Math.max(36,el.scrollHeight)+'px'}
@@ -540,16 +546,24 @@ function makeEditor(prefix,getData,saveFn,drawFn,fieldsList){
   return{startEd,commit,kd,focusEd,get};
 }
 
-const T_SK='tt_v9';
+const T_SK='tt_v10';
 let T=tLoad()||[
-  {id:1,c:'red',   t:'Migración base de datos',       d:'Pasar de MySQL a Postgres en staging. Validar datos críticos antes del corte.',u:'Completada migración de tablas usuarios. Pendiente validar tablas de auditoría con Bruno.',cr:'2026-03-10'},
-  {id:2,c:'amber', t:'Brief campaña Q2',               d:'Definir objetivos, audiencias y presupuesto para campaña de abril.',u:'Reunión agendada con agencia para el viernes. Clara trae propuesta de segmentación.',cr:'2026-03-11'},
-  {id:3,c:'blue',  t:'Revisión contratos proveedores', d:'Actualizar cláusulas según nuevo marco regulatorio.',u:'Enviado a estudio externo. A la espera de respuesta — se pidió prioridad en cláusulas.',cr:'2026-03-11'},
-  {id:4,c:'green', t:'Onboarding nuevo dev',            d:'Configurar accesos y presentar stack técnico.',u:'Completado — todos los accesos configurados y primer PR aprobado.',cr:'2026-03-08'},
-  {id:5,c:'amber', t:'Rediseño landing page',           d:'Nuevo hero y sección de precios. Coordinar copy con Clara.',u:'Mockups v2 listos para revisión. Incorporados cambios del feedback.',cr:'2026-03-12'},
-  {id:6,c:'gray',  t:'OKRs Q1',                        d:'Workshop completado con todos los leads.',u:'Cerrado — OKRs definidos y comunicados.',cr:'2026-03-01'},
-  {id:7,c:'none',  t:'Definir OKRs Q2',                d:'Workshop con leads de cada área. Reservar 2hs de bloque.',u:'',cr:'2026-03-13'},
+  {id:1,  c:'red',    t:'Migrar Base de Datos',                    d:'Ezequiel, hace la migración de Base',                                                                                                     u:'A la espera avances',                                   cr:'2026-03-25',done:false},
+  {id:2,  c:'amber',  t:'Pedir Invera Links Generación de Links',   d:'Hablar con Invera para generar links para cada FA y Complif para asociarlo a Bolsa',                                                      u:'Estado actual...',                                      cr:'2026-03-25',done:false},
+  {id:3,  c:'amber',  t:'Complif para Onboardings',                 d:'Hablar con Complif para modificar los codigos de los nuevos roles comerciales generados en Visual',                                        u:'Estado actual...',                                      cr:'2026-03-25',done:false},
+  {id:4,  c:'red',    t:'Hablar con Joaco y Emi de Daniela Rivero', d:'Hablar Emi para que trabaje con Daniela en conciliaciones',                                                                                u:'Comentar Mariano y despues hablar con Emi',              cr:'2026-03-25',done:false},
+  {id:5,  c:'violet', t:'Confirmación de Ordenes',                  d:'Gabi hace las pantallas con Invera',                                                                                                      u:'A la espera avances',                                   cr:'2026-03-25',done:false},
+  {id:6,  c:'violet', t:'Tarjeta de Debito',                        d:'Dar respuesta a Matias de Wi Bond post reunión',                                                                                          u:'Estado actual...',                                      cr:'2026-03-25',done:false},
+  {id:7,  c:'violet', t:'Valuación TC',                             d:'Seguir de cerca con Gabi',                                                                                                                u:'A la espera avances',                                   cr:'2026-03-25',done:false},
+  {id:8,  c:'blue',   t:'Retiros Automaticos desde web',            d:'Seguir con Mati los retiros automaticos a cuenta bancaria',                                                                                u:'Esperando que salga bien la actualización de Visual',   cr:'2026-03-25',done:false},
+  {id:9,  c:'violet', t:'Web Research con el Chino',                d:'Chino hace cambios necesarios para poder enviar a Invera la actualización final de web Research',                                          u:'A la espera avances',                                   cr:'2026-03-25',done:false},
+  {id:10, c:'amber',  t:'Reunión LATAM',                            d:'Ejecutar tareas restantes de LATAM',                                                                                                      u:'Estado actual...',                                      cr:'2026-03-25',done:false},
+  {id:11, c:'amber',  t:'Desarrollar Secciones Web',                d:'Pensar desarrollo Secciones, foto en chat con Eliseo Wpp',                                                                                u:'Estado actual...',                                      cr:'2026-03-25',done:false},
+  {id:12, c:'amber',  t:'BYMA Primarias',                           d:'Escribir Proceso',                                                                                                                        u:'Estado actual...',                                      cr:'2026-03-25',done:false},
+  {id:13, c:'blue',   t:'CRM',                                      d:'Ver comentarios Gero',                                                                                                                    u:'Esperando Respuesta de Cristian',                       cr:'2026-03-25',done:false},
+  {id:14, c:'blue',   t:'Carteras Administradas',                   d:'Pedir Milagros que me mande bien lo que tenemos que sumar a la cuenta corriente para obtener lo que dice la norma',                       u:'Estado actual...',                                      cr:'2026-03-25',done:false},
 ];
+if(T)T=T.map(r=>({done:false,...r}));
 let T_nid=Math.max(...T.map(r=>r.id),0)+1;
 function tLoad(){try{const d=localStorage.getItem(T_SK);return d?JSON.parse(d):null}catch{return null}}
 function tSave(){try{localStorage.setItem(T_SK,JSON.stringify(T))}catch{}showSaved()}
@@ -559,9 +573,10 @@ const tDrag=makeDrag(()=>T,d=>T=d,tSave,tDraw,'t-row-');
 const tEd=makeEditor('t',()=>T,tSave,tDraw,['t','d','u']);
 
 function tDraw(){
-  const list=tFilter.apply(T);
+  const active=tFilter.apply(T.filter(r=>!r.done));
+  const done=T.filter(r=>r.done);
   const tbody=document.getElementById('t-body');if(!tbody)return;
-  tbody.innerHTML=list.map(r=>{
+  tbody.innerHTML=active.map(r=>{
     const ted=tEd.get();
     const flds=[{f:'t',cls:'t-col-title',ph:'Título...'},{f:'d',cls:'t-col-desc',ph:'Descripción...'},{f:'u',cls:'t-col-upd',ph:'Estado actual...'}];
     const cells=flds.map(({f,cls,ph})=>{
@@ -574,13 +589,41 @@ function tDraw(){
       <td class="t-col-dot"><div class="dot-wrap"><div class="dot-btn ${DC[r.c]}" id="t-dot-${r.id}" onclick="showPicker(this,c=>{T.find(x=>x.id===${r.id}).c=c;tSave();tDraw()})"></div></div></td>
       ${cells}
       <td class="t-col-date"><div class="date-cell"><span class="date-lbl">Creado</span>${fmtDate(r.cr)}</div></td>
+      <td class="t-col-done"><button class="btn-done" onclick="tComplete(${r.id})" title="Marcar como completada">✓</button></td>
       <td class="t-col-del"><button class="btn-del" onclick="tDel(${r.id})">✕</button></td>
     </tr>`;
-  }).join('')+`<tr class="addrow"><td colspan="7"><button class="addbtn" onclick="tAddRow()">＋ Nueva tarea</button></td></tr>`;
+  }).join('')+`<tr class="addrow"><td colspan="8"><button class="addbtn" onclick="tAddRow()">＋ Nueva tarea</button></td></tr>`;
   const ted=tEd.get();if(ted)setTimeout(()=>tEd.focusEd(ted.id,ted.f),10);
+  // Completed panel
+  const main=document.querySelector('#sec-tasks .main');if(!main)return;
+  let panel=document.getElementById('t-done-panel');
+  if(!panel){panel=document.createElement('div');panel.id='t-done-panel';main.parentNode.insertBefore(panel,main.nextSibling)}
+  if(!done.length){panel.innerHTML='';return}
+  const isOpen=panel.dataset.open==='1';
+  panel.className='completed-panel';
+  panel.innerHTML=`<div class="completed-hdr" onclick="tToggleDonePanel()">
+    <span class="completed-hdr-label">Completadas</span>
+    <span class="completed-hdr-count">✓ ${done.length}</span>
+    <span class="completed-hdr-arrow${isOpen?' open':''}">▾</span>
+  </div>${isOpen?`<div style="overflow:hidden"><table style="width:100%;border-collapse:collapse;table-layout:fixed"><tbody>${done.map(r=>`<tr class="row-done">
+      <td class="t-col-drag" style="width:26px"></td>
+      <td class="t-col-dot" style="width:28px"><div class="dot-wrap"><div class="dot-btn ${DC[r.c]}" style="opacity:.35"></div></div></td>
+      <td class="t-col-title"><div class="cell-view">${xe(r.t)||'—'}</div></td>
+      <td class="t-col-desc"><div class="cell-view">${xe(r.d)||''}</div></td>
+      <td class="t-col-upd"><div class="cell-view">${xe(r.u)||''}</div></td>
+      <td class="t-col-date"><div class="date-cell"><span class="date-lbl">Creado</span>${fmtDate(r.cr)}</div></td>
+      <td class="t-col-done"><button class="btn-undone" onclick="tUncomplete(${r.id})" title="Desmarcar completada">↩</button></td>
+      <td class="t-col-del"><button class="btn-del" onclick="tDel(${r.id})">✕</button></td>
+    </tr>`).join('')}</tbody></table></div>`:''}`;
 }
-function tAddRow(){const r={id:T_nid++,c:'none',t:'',d:'',u:'',cr:today()};T.push(r);tSave();tEd.startEd(r.id,'t');tDraw();setTimeout(()=>document.getElementById('t-row-'+r.id)?.scrollIntoView({behavior:'smooth',block:'nearest'}),60)}
+function tToggleDonePanel(){
+  const p=document.getElementById('t-done-panel');
+  if(p){p.dataset.open=p.dataset.open==='1'?'0':'1';tDraw()}
+}
+function tAddRow(){const r={id:T_nid++,c:'none',t:'',d:'',u:'',cr:today(),done:false};T.push(r);tSave();tEd.startEd(r.id,'t');tDraw();setTimeout(()=>document.getElementById('t-row-'+r.id)?.scrollIntoView({behavior:'smooth',block:'nearest'}),60)}
 function tDel(id){if(!confirm('¿Eliminar?'))return;T=T.filter(r=>r.id!==id);tSave();tDraw()}
+function tComplete(id){const r=T.find(x=>x.id===id);if(r){r.done=true;tSave();tDraw()}}
+function tUncomplete(id){const r=T.find(x=>x.id===id);if(r){r.done=false;tSave();tDraw()}}
 
 const W_SK='tt_write_v2';
 let W=wLoad()||[
