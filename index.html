@@ -66,14 +66,14 @@ tbody tr:last-child{border-bottom:none}
 td{padding:0;vertical-align:top;position:relative}
 
 /* TASK TABLE COLS */
-.t-col-drag{width:26px}.t-col-dot{width:28px}.t-col-title{width:20%}.t-col-desc{width:25%}.t-col-upd{width:38%}.t-col-date{width:68px}.t-col-done{width:34px}.t-col-del{width:26px}
+.t-col-drag{width:26px}.t-col-dot{width:28px}.t-col-title{width:17%}.t-col-desc{width:30%}.t-col-upd{width:32%}.t-col-date{width:62px}.t-col-done{width:44px}.t-col-del{width:26px}
 
 /* WRITE/FREE TABLE COLS */
 .w-col-drag{width:26px}.w-col-dot{width:28px}.w-col-name{width:26%}.w-col-topic{width:62%}.w-col-del{width:26px}
 .f-col-drag{width:26px}.f-col-dot{width:28px}.f-col-title{width:26%}.f-col-link{width:62%}.f-col-del{width:26px}
 
 /* CELLS */
-.cell-view{padding:8px 11px;line-height:1.55;min-height:36px;word-break:break-word;white-space:pre-wrap;cursor:default;color:#2a2a2a}
+.cell-view{padding:8px 11px;line-height:1.55;min-height:36px;word-break:break-word;white-space:pre-wrap;cursor:text;color:#2a2a2a;user-select:text}
 .cell-view:hover{background:rgba(0,0,0,.02)}
 .t-col-title .cell-view{font-size:13px;font-weight:600;color:#1a1a1a}
 .t-col-desc .cell-view,.t-col-upd .cell-view{font-size:13px}
@@ -91,7 +91,7 @@ textarea.cell-ed{width:100%;padding:8px 11px;font-size:13px;font-family:inherit;
 .date-lbl{font-size:9px;color:#d4d4d4;text-transform:uppercase;letter-spacing:.04em;display:block;margin-bottom:1px}
 
 /* ROW COLORS */
-.row-red td{background:#fde4e4}.row-amber td{background:#fef0c4}.row-blue td{background:#d6eeff}.row-violet td{background:#ede9fe}.row-green td{background:#d4f5ca}.row-gray td{background:#e4e4e4}
+.row-red td{background:#f7c4c4}.row-amber td{background:#fef0c4}.row-blue td{background:#d6eeff}.row-violet td{background:#ede9fe}.row-green td{background:#d4f5ca}.row-gray td{background:#e4e4e4}
 tbody tr:hover td{filter:brightness(.972)}
 tbody tr.dragging{opacity:.35}
 tbody tr.drag-over td{border-top:2px solid #378ADD !important}
@@ -115,10 +115,17 @@ tbody tr:hover .drag-handle,tbody tr:hover .wdrag-handle{opacity:1}
 .btn-del:hover,.wbtn-del:hover{color:#E24B4A}
 
 /* DONE BUTTON + COMPLETED PANEL */
-.btn-done{display:block;width:100%;padding:11px 0;background:none;border:none;cursor:pointer;color:#d0d0d0;font-size:16px;text-align:center;line-height:1;font-weight:700}
-.btn-done:hover{color:#22c55e}
-.btn-undone{display:block;width:100%;padding:11px 0;background:none;border:none;cursor:pointer;color:#22c55e;font-size:13px;text-align:center}
-.btn-undone:hover{color:#16a34a}
+.btn-done-wrap{display:flex;align-items:center;justify-content:center;padding:7px 0}
+.btn-done{width:24px;height:24px;border-radius:50%;border:2px solid #d8d8d8;background:none;cursor:pointer;color:#c8c8c8;font-size:13px;font-weight:700;display:flex;align-items:center;justify-content:center;transition:border-color .18s,color .18s,background .18s,transform .18s;flex-shrink:0;line-height:1}
+.btn-done:hover{border-color:#22c55e;color:#22c55e;background:rgba(34,197,94,.1);transform:scale(1.18)}
+.btn-done:active{transform:scale(.88);background:rgba(34,197,94,.22)}
+@keyframes doneFlash{0%{transform:scale(1)}35%{transform:scale(1.45);border-color:#22c55e;color:#22c55e;background:rgba(34,197,94,.25)}100%{transform:scale(1)}}
+.btn-done.flashing{animation:doneFlash .35s ease}
+@keyframes rowFade{0%{opacity:1;transform:translateX(0)}100%{opacity:0;transform:translateX(14px)}}
+.row-completing{animation:rowFade .3s ease forwards}
+.btn-undone-wrap{display:flex;align-items:center;justify-content:center;padding:7px 0}
+.btn-undone{width:22px;height:22px;border-radius:50%;border:2px solid #22c55e;background:rgba(34,197,94,.12);cursor:pointer;color:#22c55e;font-size:11px;display:flex;align-items:center;justify-content:center;transition:all .18s}
+.btn-undone:hover{background:rgba(34,197,94,.25);transform:scale(1.12)}
 .row-done td{background:#fafaf9 !important}
 .row-done .cell-view{opacity:.5;text-decoration:line-through;text-decoration-color:rgba(0,0,0,.2)}
 .row-done .date-cell{opacity:.4}
@@ -235,7 +242,7 @@ tbody tr:hover .drag-handle,tbody tr:hover .wdrag-handle{opacity:1}
     <input type="text" id="t-search" placeholder="Buscar..." oninput="tDraw()">
     <div class="fdots" id="t-dots"></div>
     <div id="t-tag" style="display:none"></div>
-    <span class="hint">Doble clic para editar · Arrastrar ⠿ para ordenar</span>
+    <button id="t-done-btn" onclick="tToggleDonePanel()" style="margin-left:auto;font-size:11px;padding:4px 12px;border-radius:20px;border:1.5px solid rgba(0,0,0,.12);background:#fff;color:#888;cursor:pointer;display:flex;align-items:center;gap:6px;font-family:inherit;white-space:nowrap;transition:all .15s" onmouseenter="this.style.borderColor='#22c55e';this.style.color='#22c55e'" onmouseleave="this.style.borderColor='rgba(0,0,0,.12)';this.style.color='#888'">✓ Completadas <span id="t-done-count" style="background:#e8e8e8;color:#888;font-size:10px;font-weight:700;padding:1px 6px;border-radius:10px;min-width:18px;text-align:center">0</span></button>
   </div>
   <div class="legend">
     <div class="leg-item"><div class="leg-dot" style="background:#E24B4A"></div>Urgente</div>
@@ -252,7 +259,7 @@ tbody tr:hover .drag-handle,tbody tr:hover .wdrag-handle{opacity:1}
         <th class="t-col-drag"></th><th class="t-col-dot"></th>
         <th class="t-col-title">Título</th>
         <th class="t-col-desc">Descripción</th>
-        <th class="t-col-upd">Estado / Seguimiento</th>
+        <th class="t-col-upd">Estado</th>
         <th class="t-col-date" style="text-align:center">Creado</th>
         <th class="t-col-done"></th>
         <th class="t-col-del"></th>
@@ -501,7 +508,7 @@ document.addEventListener('mousedown',e=>{if(activePkId&&!pfloat.contains(e.targ
 function makeDrag(getData,setData,saveFn,drawFn,rowPrefix){
   let dragId=null,overIdx=null;
   return{
-    start(e,id){dragId=id;e.dataTransfer.effectAllowed='move';setTimeout(()=>document.getElementById(rowPrefix+id)?.classList.add('dragging'),0)},
+    start(e,id){if(!e.target.closest('.drag-handle,.wdrag-handle')){e.preventDefault();return}dragId=id;e.dataTransfer.effectAllowed='move';setTimeout(()=>document.getElementById(rowPrefix+id)?.classList.add('dragging'),0)},
     over(e,id){e.preventDefault();if(overIdx!==id){document.querySelectorAll('tr.drag-over').forEach(r=>r.classList.remove('drag-over'));overIdx=id;document.getElementById(rowPrefix+id)?.classList.add('drag-over')}},
     leave(e,id){if(!e.currentTarget.contains(e.relatedTarget)){document.getElementById(rowPrefix+id)?.classList.remove('drag-over');if(overIdx===id)overIdx=null}},
     drop(e,tid){
@@ -589,11 +596,14 @@ function tDraw(){
       <td class="t-col-dot"><div class="dot-wrap"><div class="dot-btn ${DC[r.c]}" id="t-dot-${r.id}" onclick="showPicker(this,c=>{T.find(x=>x.id===${r.id}).c=c;tSave();tDraw()})"></div></div></td>
       ${cells}
       <td class="t-col-date"><div class="date-cell"><span class="date-lbl">Creado</span>${fmtDate(r.cr)}</div></td>
-      <td class="t-col-done"><button class="btn-done" onclick="tComplete(${r.id})" title="Marcar como completada">✓</button></td>
+      <td class="t-col-done"><div class="btn-done-wrap"><button class="btn-done" onclick="tComplete(${r.id},this)" title="Marcar como completada">✓</button></div></td>
       <td class="t-col-del"><button class="btn-del" onclick="tDel(${r.id})">✕</button></td>
     </tr>`;
   }).join('')+`<tr class="addrow"><td colspan="8"><button class="addbtn" onclick="tAddRow()">＋ Nueva tarea</button></td></tr>`;
   const ted=tEd.get();if(ted)setTimeout(()=>tEd.focusEd(ted.id,ted.f),10);
+  // Update done badge
+  const doneCount=document.getElementById('t-done-count');
+  if(doneCount){doneCount.textContent=done.length;doneCount.style.background=done.length?'#dcfce7':'#e8e8e8';doneCount.style.color=done.length?'#16a34a':'#888';}
   // Completed panel
   const main=document.querySelector('#sec-tasks .main');if(!main)return;
   let panel=document.getElementById('t-done-panel');
@@ -612,7 +622,7 @@ function tDraw(){
       <td class="t-col-desc"><div class="cell-view">${xe(r.d)||''}</div></td>
       <td class="t-col-upd"><div class="cell-view">${xe(r.u)||''}</div></td>
       <td class="t-col-date"><div class="date-cell"><span class="date-lbl">Creado</span>${fmtDate(r.cr)}</div></td>
-      <td class="t-col-done"><button class="btn-undone" onclick="tUncomplete(${r.id})" title="Desmarcar completada">↩</button></td>
+      <td class="t-col-done"><div class="btn-undone-wrap"><button class="btn-undone" onclick="tUncomplete(${r.id})" title="Devolver a pendientes">↩</button></div></td>
       <td class="t-col-del"><button class="btn-del" onclick="tDel(${r.id})">✕</button></td>
     </tr>`).join('')}</tbody></table></div>`:''}`;
 }
@@ -622,7 +632,12 @@ function tToggleDonePanel(){
 }
 function tAddRow(){const r={id:T_nid++,c:'none',t:'',d:'',u:'',cr:today(),done:false};T.push(r);tSave();tEd.startEd(r.id,'t');tDraw();setTimeout(()=>document.getElementById('t-row-'+r.id)?.scrollIntoView({behavior:'smooth',block:'nearest'}),60)}
 function tDel(id){if(!confirm('¿Eliminar?'))return;T=T.filter(r=>r.id!==id);tSave();tDraw()}
-function tComplete(id){const r=T.find(x=>x.id===id);if(r){r.done=true;tSave();tDraw()}}
+function tComplete(id,btn){
+  if(btn){btn.classList.add('flashing')}
+  const row=document.getElementById('t-row-'+id);
+  if(row){row.classList.add('row-completing')}
+  setTimeout(()=>{const r=T.find(x=>x.id===id);if(r){r.done=true;tSave();tDraw()}},300);
+}
 function tUncomplete(id){const r=T.find(x=>x.id===id);if(r){r.done=false;tSave();tDraw()}}
 
 const W_SK='tt_write_v2';
@@ -763,6 +778,7 @@ const DEFAULT_MEETINGS=[
 ];
 
 let M=mLoad()||DEFAULT_MEETINGS;
+M=M.map(r=>({next_steps:'',...r}));
 let M_nid=Math.max(...M.map(r=>r.id),0)+1;
 function mLoad(){try{const d=localStorage.getItem(M_SK);return d?JSON.parse(d):null}catch{return null}}
 function mSave(){try{localStorage.setItem(M_SK,JSON.stringify(M))}catch{}showSaved()}
@@ -825,10 +841,14 @@ function mDraw(){
       html+=`<div class="mn-card" id="m-card-${r.id}">
         <div class="mn-card-header" onclick="mToggle(${r.id})">
           <span class="mn-card-arrow${isOpen?' open':''}">▶</span>
-          <span class="mn-card-folder" style="background:${col}18;color:${col}">${xe(r.folder)}</span>
-          <span class="mn-card-title">${r.title?xe(r.title):'<span style="color:#ddd;font-weight:400">Sin título</span>'}</span>
-          <span class="mn-card-people" title="${xe(r.people)}">${r.people?'👥 '+xe(r.people):''}</span>
-          <span class="mn-card-date">${mFmtDateLong(r.date)}</span>
+          <div style="flex:1;min-width:0;margin-right:8px">
+            <div style="display:flex;align-items:center;gap:7px;margin-bottom:4px;flex-wrap:wrap">
+              <span class="mn-card-folder" style="background:${col}18;color:${col}">${xe(r.folder)}</span>
+              <span style="font-size:11px;color:#bbb">${mFmtDateLong(r.date)}</span>
+            </div>
+            <div class="mn-card-title">${r.title?xe(r.title):'<span style="color:#ddd;font-weight:400">Sin título</span>'}</div>
+            ${r.people?`<div style="font-size:11px;color:#bbb;margin-top:3px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">👥 ${xe(r.people)}</div>`:''}
+          </div>
           <button class="mn-card-del" onclick="event.stopPropagation();mDel(${r.id})" title="Eliminar">✕</button>
         </div>
         <div class="mn-card-body${isOpen?' open':''}">
@@ -844,26 +864,24 @@ function mDraw(){
 
 function mRenderView(r){
   const col=M_FOLDER_COLORS[r.folder]||'#666';
+  const peoplePills=r.people?r.people.split(',').map(p=>`<span style="font-size:11px;padding:2px 10px;border-radius:20px;background:${col}15;color:${col};font-weight:500;white-space:nowrap">${xe(p.trim())}</span>`).join(''):'<span style="font-size:12px;color:#ccc;font-style:italic">Sin participantes</span>';
   return`
-    <div style="display:flex;gap:16px;flex-wrap:wrap;margin-bottom:12px">
-      <div style="flex:1;min-width:180px">
-        <div class="mn-body-label">Fecha</div>
-        <div class="mn-body-field" ondblclick="mStartEdit(${r.id})">${r.date?mFmtDateLong(r.date):'<span style="color:#ddd">Sin fecha</span>'}</div>
-      </div>
-      <div style="flex:2;min-width:200px">
-        <div class="mn-body-label">Participantes</div>
-        <div class="mn-body-field${r.people?'':' empty'}" ondblclick="mStartEdit(${r.id})">${r.people?xe(r.people):'Sin participantes'}</div>
-      </div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:14px">
+      ${peoplePills}
     </div>
     <div class="mn-body-row">
       <div class="mn-body-label">Notas</div>
-      <div class="mn-body-field${r.notes?'':' empty'}" ondblclick="mStartEdit(${r.id})" style="min-height:60px">${r.notes?xe(r.notes):'Hacé doble clic para agregar notas...'}</div>
+      <div ondblclick="mStartEdit(${r.id})" style="margin-top:5px;background:#f9f9f7;border-radius:8px;padding:13px 15px;font-size:13px;color:#2a2a2a;line-height:1.75;white-space:pre-wrap;word-break:break-word;min-height:52px;border:1px solid rgba(0,0,0,.05);cursor:text">${r.notes?xe(r.notes):'<span style="color:#ccc;font-style:italic">Sin notas — doble clic para editar</span>'}</div>
     </div>
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-top:8px">
-      <div class="mn-folder-tags">
+    ${r.next_steps?`<div class="mn-body-row" style="margin-top:10px">
+      <div class="mn-body-label" style="color:#7C3AED">▸ Próximos pasos</div>
+      <div ondblclick="mStartEdit(${r.id})" style="margin-top:5px;background:#f5f0ff;border-radius:8px;padding:13px 15px;font-size:13px;color:#2a2a2a;line-height:1.75;white-space:pre-wrap;word-break:break-word;border:1px solid rgba(124,58,237,.1);cursor:text">${xe(r.next_steps)}</div>
+    </div>`:''}
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-top:14px;padding-top:10px;border-top:1px solid rgba(0,0,0,.06)">
+      <div style="display:flex;gap:5px;flex-wrap:wrap">
         ${M_FOLDERS.map(f=>{const fc=M_FOLDER_COLORS[f]||'#666';return`<span class="mn-folder-tag" onclick="mSetCardFolder(${r.id},'${f}')" style="background:${r.folder===f?fc+'22':'#f5f5f5'};color:${r.folder===f?fc:'#aaa'}">${f}</span>`}).join('')}
       </div>
-      <button onclick="mStartEdit(${r.id})" style="font-size:11px;padding:4px 12px;border-radius:6px;border:1px solid rgba(0,0,0,.15);background:none;color:#888;cursor:pointer;flex-shrink:0;margin-left:12px" onmouseenter="this.style.background='#f5f5f5'" onmouseleave="this.style.background='none'">Editar</button>
+      <button onclick="mStartEdit(${r.id})" style="font-size:11px;padding:5px 14px;border-radius:6px;border:1px solid rgba(0,0,0,.15);background:none;color:#888;cursor:pointer;flex-shrink:0;margin-left:12px;font-family:inherit" onmouseenter="this.style.background='#f5f5f5'" onmouseleave="this.style.background='none'">✏ Editar</button>
     </div>`;
 }
 
@@ -885,7 +903,11 @@ function mRenderEdit(r){
     </div>
     <div class="mn-body-row">
       <div class="mn-body-label">Notas</div>
-      <textarea class="mn-body-textarea" id="m-ed-notes-${r.id}" placeholder="Anotaciones, decisiones, acciones...">${xe(r.notes)}</textarea>
+      <textarea class="mn-body-textarea" id="m-ed-notes-${r.id}" placeholder="Resumen, puntos tratados, decisiones...">${xe(r.notes)}</textarea>
+    </div>
+    <div class="mn-body-row">
+      <div class="mn-body-label" style="color:#7C3AED">Próximos pasos</div>
+      <textarea class="mn-body-textarea" id="m-ed-nextsteps-${r.id}" placeholder="Tareas pendientes, próximas acciones..." style="border-left:2px solid #7C3AED22">${xe(r.next_steps||'')}</textarea>
     </div>
     <div class="mn-body-row">
       <div class="mn-body-label">Carpeta</div>
@@ -934,6 +956,7 @@ function mSaveEdit(id){
   r.date=document.getElementById('m-ed-date-'+id)?.value||'';
   r.people=(document.getElementById('m-ed-people-'+id)?.value||'').trim();
   r.notes=(document.getElementById('m-ed-notes-'+id)?.value||'').trim();
+  r.next_steps=(document.getElementById('m-ed-nextsteps-'+id)?.value||'').trim();
   const folderInput=document.getElementById('m-ed-folder-'+id);
   if(folderInput)r.folder=folderInput.value;
   mSave();
@@ -1059,105 +1082,112 @@ document.addEventListener('input',e=>{if(e.target.classList.contains('cell-ed'))
 
 </script>
 
-<!-- STRESS RELIEF: BUBBLE WRAP -->
+<!-- STRESS RELIEF: PARTICLE TOY -->
 <style>
 #bw-fab{position:fixed;bottom:18px;right:18px;z-index:50;width:52px;height:52px;border-radius:50%;background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;border:none;cursor:pointer;font-size:22px;box-shadow:0 4px 18px rgba(102,126,234,.45);transition:transform .2s,box-shadow .2s;display:flex;align-items:center;justify-content:center}
 #bw-fab:hover{transform:scale(1.12);box-shadow:0 6px 24px rgba(102,126,234,.6)}
 #bw-fab:active{transform:scale(.95)}
-#bw-panel{position:fixed;bottom:80px;right:18px;z-index:50;width:320px;background:#fff;border-radius:14px;border:1px solid rgba(0,0,0,.1);box-shadow:0 12px 48px rgba(0,0,0,.18);display:none;overflow:hidden;animation:bwSlide .25s ease}
-@keyframes bwSlide{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+#bw-panel{position:fixed;bottom:80px;right:18px;z-index:50;width:340px;background:#0f0f1a;border-radius:16px;border:1px solid rgba(255,255,255,.08);box-shadow:0 16px 60px rgba(0,0,0,.4);display:none;overflow:hidden;animation:bwSlide .25s ease}
+@keyframes bwSlide{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
 #bw-panel.open{display:block}
-.bw-header{padding:14px 16px 10px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid rgba(0,0,0,.06)}
-.bw-title{font-size:14px;font-weight:700;color:#1a1a1a}
-.bw-score{font-size:11px;color:#764ba2;font-weight:600;letter-spacing:.03em}
-.bw-grid{display:grid;grid-template-columns:repeat(8,1fr);gap:4px;padding:14px}
-.bw-bubble{aspect-ratio:1;border-radius:50%;background:radial-gradient(circle at 35% 35%,rgba(255,255,255,.8),rgba(102,126,234,.25) 40%,rgba(118,75,162,.3));border:1.5px solid rgba(102,126,234,.3);cursor:pointer;transition:transform .1s,background .15s;position:relative;overflow:hidden}
-.bw-bubble:hover{transform:scale(1.1);border-color:rgba(102,126,234,.5)}
-.bw-bubble:active{transform:scale(.85)}
-.bw-bubble.popped{background:rgba(0,0,0,.04);border-color:rgba(0,0,0,.06);cursor:default;transform:scale(.88)}
-.bw-bubble.popped::after{content:'';position:absolute;inset:0;background:none}
-.bw-pop{position:absolute;pointer-events:none;font-size:16px;animation:bwPopAnim .5s ease forwards}
-@keyframes bwPopAnim{0%{opacity:1;transform:scale(1) translateY(0)}100%{opacity:0;transform:scale(1.5) translateY(-18px)}}
-.bw-footer{padding:8px 16px 12px;display:flex;align-items:center;justify-content:space-between;border-top:1px solid rgba(0,0,0,.06)}
-.bw-reset{font-size:11px;color:#764ba2;cursor:pointer;font-weight:500;background:none;border:none;padding:4px 10px;border-radius:6px}
-.bw-reset:hover{background:rgba(118,75,162,.08)}
-.bw-msg{font-size:10px;color:#bbb;font-style:italic}
+.bw-header{padding:13px 16px 10px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid rgba(255,255,255,.06)}
+.bw-title{font-size:13px;font-weight:700;color:rgba(255,255,255,.88);letter-spacing:.02em}
+.bw-hint{font-size:10px;color:rgba(255,255,255,.3);font-style:italic}
+#bw-canvas{display:block;width:340px;height:220px;cursor:crosshair}
+.bw-footer{padding:8px 16px 10px;display:flex;align-items:center;justify-content:space-between;border-top:1px solid rgba(255,255,255,.06)}
+.bw-reset{font-size:11px;color:rgba(255,255,255,.4);cursor:pointer;font-weight:500;background:none;border:none;padding:4px 10px;border-radius:6px;font-family:inherit}
+.bw-reset:hover{background:rgba(255,255,255,.07);color:rgba(255,255,255,.7)}
+.bw-msg{font-size:10px;color:rgba(255,255,255,.25);font-style:italic}
 </style>
 
-<button id="bw-fab" onclick="bwToggle()" title="Sacate el estrés">&#x1f4a5;</button>
+<button id="bw-fab" onclick="bwToggle()" title="Sacate el estrés">✦</button>
 <div id="bw-panel">
   <div class="bw-header">
-    <span class="bw-title">Bubble Wrap</span>
-    <span class="bw-score" id="bw-score">0 / 48</span>
+    <span class="bw-title">Modo zen</span>
+    <span class="bw-hint">mové el mouse rápido</span>
   </div>
-  <div class="bw-grid" id="bw-grid"></div>
+  <canvas id="bw-canvas" width="340" height="220"></canvas>
   <div class="bw-footer">
-    <button class="bw-reset" onclick="bwReset()">Nuevo plástico</button>
-    <span class="bw-msg" id="bw-msg">Hacé clic para reventar</span>
+    <button class="bw-reset" onclick="bwReset()">Limpiar</button>
+    <span class="bw-msg" id="bw-msg">✦ esperando movimiento...</span>
   </div>
 </div>
 
 <script>
 (function(){
-  const TOTAL=48;
-  const EMOJIS=['💥','✨','⚡','💫','🎉','💜','🔮','🫧'];
-  const MSGS_PROGRESS=['Dale, seguí...','Eso es terapia','Qué satisfacción','Imparable','Casi, casi...'];
-  const MSGS_DONE=['Sos libre del estrés','Plástico destruido','Zen mode: ON','Nivel de paz: 100%','Ya sos otra persona'];
-  let popped=0;
+  const canvas=document.getElementById('bw-canvas');
+  const ctx=canvas.getContext('2d');
+  const COLORS=['#E24B4A','#EF9F27','#378ADD','#7C3AED','#22c55e','#06b6d4','#f59e0b','#ec4899','#a78bfa'];
+  const MSGS=['mové más rápido','así se hace','zen total','velocidad pura','en llamas','imparable'];
+  let particles=[],animId=null,isOpen=false,lx=0,ly=0,moved=0;
 
-  function buildGrid(){
-    const grid=document.getElementById('bw-grid');
-    grid.innerHTML='';
-    popped=0;
-    updateScore();
-    document.getElementById('bw-msg').textContent='Hacé clic para reventar';
-    for(let i=0;i<TOTAL;i++){
-      const b=document.createElement('div');
-      b.className='bw-bubble';
-      b.addEventListener('click',function(){
-        if(this.classList.contains('popped'))return;
-        this.classList.add('popped');
-        popped++;
-        updateScore();
-        // Pop emoji
-        const em=document.createElement('span');
-        em.className='bw-pop';
-        em.textContent=EMOJIS[Math.floor(Math.random()*EMOJIS.length)];
-        em.style.left=Math.random()*40+'%';
-        em.style.top='10%';
-        this.appendChild(em);
-        setTimeout(()=>em.remove(),500);
-        // Messages
-        const msg=document.getElementById('bw-msg');
-        if(popped===TOTAL){
-          msg.textContent=MSGS_DONE[Math.floor(Math.random()*MSGS_DONE.length)];
-        }else if(popped%8===0){
-          msg.textContent=MSGS_PROGRESS[Math.floor(Math.random()*MSGS_PROGRESS.length)];
-        }
-      });
-      grid.appendChild(b);
+  function Particle(x,y,vx,vy){
+    this.x=x;this.y=y;this.vx=vx;this.vy=vy;
+    this.r=2.5+Math.random()*4;
+    this.color=COLORS[Math.floor(Math.random()*COLORS.length)];
+    this.alpha=1;
+    this.decay=0.012+Math.random()*0.014;
+    this.gravity=0.12;
+    this.glow=Math.random()>.6;
+  }
+  Particle.prototype.update=function(){
+    this.x+=this.vx;this.y+=this.vy;
+    this.vy+=this.gravity;this.vx*=.985;
+    if(this.x<this.r){this.x=this.r;this.vx=Math.abs(this.vx)*.65}
+    if(this.x>340-this.r){this.x=340-this.r;this.vx=-Math.abs(this.vx)*.65}
+    if(this.y>220-this.r){this.y=220-this.r;this.vy=-Math.abs(this.vy)*.72;this.vx*=.88}
+    this.alpha-=this.decay;
+  };
+  Particle.prototype.draw=function(){
+    if(this.alpha<=0)return;
+    ctx.save();ctx.globalAlpha=Math.max(0,this.alpha);
+    if(this.glow){ctx.shadowBlur=8;ctx.shadowColor=this.color}
+    ctx.fillStyle=this.color;
+    ctx.beginPath();ctx.arc(this.x,this.y,this.r,0,Math.PI*2);ctx.fill();
+    ctx.restore();
+  };
+
+  canvas.addEventListener('mousemove',function(e){
+    if(!isOpen)return;
+    const rect=canvas.getBoundingClientRect();
+    const mx=e.clientX-rect.left,my=e.clientY-rect.top;
+    const speed=Math.hypot(mx-lx,my-ly);
+    if(speed>2){
+      const n=Math.min(Math.floor(speed/3),8);
+      for(let i=0;i<n;i++){
+        const a=Math.random()*Math.PI*2,s=.8+Math.random()*speed*.18;
+        particles.push(new Particle(mx,my,Math.cos(a)*s,Math.sin(a)*s-1.5));
+      }
+      moved+=speed;
+      if(moved>400){document.getElementById('bw-msg').textContent='✦ '+MSGS[Math.floor(Math.random()*MSGS.length)];moved=0}
     }
+    lx=mx;ly=my;
+    if(particles.length>300)particles=particles.slice(-300);
+  });
+
+  function loop(){
+    ctx.fillStyle='rgba(15,15,26,.18)';ctx.fillRect(0,0,340,220);
+    particles=particles.filter(p=>p.alpha>0);
+    particles.forEach(p=>{p.update();p.draw()});
+    animId=requestAnimationFrame(loop);
   }
 
-  function updateScore(){
-    document.getElementById('bw-score').textContent=popped+' / '+TOTAL;
-  }
+  function bwReset(){particles=[];ctx.clearRect(0,0,340,220);ctx.fillStyle='#0f0f1a';ctx.fillRect(0,0,340,220);document.getElementById('bw-msg').textContent='✦ esperando movimiento...';moved=0}
 
   window.bwToggle=function(){
     const p=document.getElementById('bw-panel');
     p.classList.toggle('open');
-    if(p.classList.contains('open')&&!document.getElementById('bw-grid').children.length)buildGrid();
+    isOpen=p.classList.contains('open');
+    if(isOpen){ctx.fillStyle='#0f0f1a';ctx.fillRect(0,0,340,220);if(!animId)loop()}
+    else{cancelAnimationFrame(animId);animId=null;particles=[]}
   };
-  window.bwReset=buildGrid;
+  window.bwReset=bwReset;
 
-  // Close on outside click
   document.addEventListener('mousedown',function(e){
     const p=document.getElementById('bw-panel');
     const f=document.getElementById('bw-fab');
-    if(p.classList.contains('open')&&!p.contains(e.target)&&!f.contains(e.target))p.classList.remove('open');
+    if(p.classList.contains('open')&&!p.contains(e.target)&&!f.contains(e.target)){p.classList.remove('open');isOpen=false;cancelAnimationFrame(animId);animId=null;particles=[]}
   });
-
-  buildGrid();
 })();
 </script>
 
