@@ -93,7 +93,6 @@ textarea.cell-ed{width:100%;padding:8px 11px;font-size:13px;font-family:inherit;
 .rem-cell:hover{background:rgba(0,0,0,.02)}
 .rem-cell.has-rem{color:#999}
 .rem-cell.is-due{color:#E24B4A;font-weight:700}
-.rem-date-inp{position:absolute;inset:0;opacity:0;width:100%;height:100%;cursor:pointer;z-index:1}
 .rem-hint{font-size:15px;color:#e8e8e8;line-height:1}
 .rem-lbl{font-size:9px;text-transform:uppercase;letter-spacing:.04em;display:block;margin-bottom:1px;color:#d4d4d4}
 .rem-cell.is-due .rem-lbl{color:#f08080}
@@ -606,8 +605,8 @@ function tDraw(){
       if(isEd)return`<td class="${cls}"><textarea class="cell-ed" id="t-ed-${r.id}-${f}" onblur="tEd.commit(${r.id},'${f}',this.value)" onkeydown="tEd.kd(event,${r.id},'${f}')" oninput="as(this)">${xe(val)}</textarea></td>`;
       return`<td class="${cls}"><div class="cell-view${val?'':' cell-empty'}" ondblclick="tEd.startEd(${r.id},'${f}')">${val?xe(val):ph}</div></td>`;
     }).join('');
-    const remCell=`<td class="t-col-rem"><div class="rem-cell${remDue?' is-due':r.rem?' has-rem':''}">
-      <input type="date" class="rem-date-inp" value="${r.rem||''}" onchange="tSaveRem(${r.id},this.value)">
+    const remCell=`<td class="t-col-rem"><div class="rem-cell${remDue?' is-due':r.rem?' has-rem':''}" onclick="document.getElementById('rem-inp-${r.id}').showPicker()">
+      <input type="date" id="rem-inp-${r.id}" style="position:absolute;opacity:0;pointer-events:none;width:1px;height:1px;top:0;left:0" value="${r.rem||''}" onchange="tSaveRem(${r.id},this.value)">
       ${r.rem?`<span class="rem-lbl">${remDue?'⚡ Urgente':'Recordar'}</span>${fmtDate(r.rem)}<button class="rem-clr" onclick="event.stopPropagation();tSaveRem(${r.id},'')">✕</button>`:'<span class="rem-hint">＋</span>'}
     </div></td>`;
     return`<tr class="${rowClass}" id="t-row-${r.id}" draggable="false" ondragstart="tDrag.start(event,${r.id})" ondragover="tDrag.over(event,${r.id})" ondragleave="tDrag.leave(event,${r.id})" ondrop="tDrag.drop(event,${r.id})" ondragend="tDrag.end()">
