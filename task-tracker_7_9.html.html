@@ -73,7 +73,7 @@ td{padding:0;vertical-align:top;position:relative}
 .f-col-drag{width:26px}.f-col-dot{width:28px}.f-col-title{width:26%}.f-col-link{width:62%}.f-col-del{width:26px}
 
 /* CELLS */
-.cell-view{padding:8px 11px;line-height:1.55;min-height:36px;word-break:break-word;white-space:pre-wrap;cursor:default;color:#2a2a2a}
+.cell-view{padding:8px 11px;line-height:1.55;min-height:36px;word-break:break-word;white-space:pre-wrap;cursor:text;color:#2a2a2a;user-select:text}
 .cell-view:hover{background:rgba(0,0,0,.02)}
 .t-col-title .cell-view{font-size:13px;font-weight:600;color:#1a1a1a}
 .t-col-desc .cell-view,.t-col-upd .cell-view{font-size:13px}
@@ -506,7 +506,7 @@ function makeDrag(getData,setData,saveFn,drawFn,rowPrefix){
       if(fi<0||ti<0){this.end();return}
       const[m]=D.splice(fi,1);D.splice(ti,0,m);setData(D);saveFn();this.end();drawFn();
     },
-    end(){dragId=null;overIdx=null;document.querySelectorAll('tr.dragging,tr.drag-over').forEach(r=>r.classList.remove('dragging','drag-over'))}
+    end(){dragId=null;overIdx=null;document.querySelectorAll('tr.dragging,tr.drag-over').forEach(r=>r.classList.remove('dragging','drag-over'));document.querySelectorAll('tr[draggable="true"]').forEach(r=>{r.draggable=false})}
   };
 }
 
@@ -569,8 +569,8 @@ function tDraw(){
       if(isEd)return`<td class="${cls}"><textarea class="cell-ed" id="t-ed-${r.id}-${f}" onblur="tEd.commit(${r.id},'${f}',this.value)" onkeydown="tEd.kd(event,${r.id},'${f}')" oninput="as(this)">${xe(val)}</textarea></td>`;
       return`<td class="${cls}"><div class="cell-view${val?'':' cell-empty'}" ondblclick="tEd.startEd(${r.id},'${f}')">${val?xe(val):ph}</div></td>`;
     }).join('');
-    return`<tr class="${RC[r.c]||''}" id="t-row-${r.id}" draggable="true" ondragstart="tDrag.start(event,${r.id})" ondragover="tDrag.over(event,${r.id})" ondragleave="tDrag.leave(event,${r.id})" ondrop="tDrag.drop(event,${r.id})" ondragend="tDrag.end()">
-      <td class="t-col-drag"><div class="drag-handle">⠿</div></td>
+    return`<tr class="${RC[r.c]||''}" id="t-row-${r.id}" draggable="false" ondragstart="tDrag.start(event,${r.id})" ondragover="tDrag.over(event,${r.id})" ondragleave="tDrag.leave(event,${r.id})" ondrop="tDrag.drop(event,${r.id})" ondragend="tDrag.end()">
+      <td class="t-col-drag"><div class="drag-handle" onmousedown="this.closest('tr').draggable=true" onmouseup="this.closest('tr').draggable=false">⠿</div></td>
       <td class="t-col-dot"><div class="dot-wrap"><div class="dot-btn ${DC[r.c]}" id="t-dot-${r.id}" onclick="showPicker(this,c=>{T.find(x=>x.id===${r.id}).c=c;tSave();tDraw()})"></div></div></td>
       ${cells}
       <td class="t-col-date"><div class="date-cell"><span class="date-lbl">Creado</span>${fmtDate(r.cr)}</div></td>
@@ -609,8 +609,8 @@ function wDraw(){
       if(isEd)return`<td class="${cls}"><textarea class="cell-ed" id="w-ed-${r.id}-${f}" onblur="wEd.commit(${r.id},'${f}',this.value)" onkeydown="wEd.kd(event,${r.id},'${f}')" oninput="as(this)">${xe(val)}</textarea></td>`;
       return`<td class="${cls}"><div class="cell-view${val?'':' cell-empty'}" ondblclick="wEd.startEd(${r.id},'${f}')">${val?xe(val):ph}</div></td>`;
     }).join('');
-    return`<tr class="${RC[r.c]||''}" id="w-row-${r.id}" draggable="true" ondragstart="wDrag.start(event,${r.id})" ondragover="wDrag.over(event,${r.id})" ondragleave="wDrag.leave(event,${r.id})" ondrop="wDrag.drop(event,${r.id})" ondragend="wDrag.end()">
-      <td class="w-col-drag"><div class="wdrag-handle">⠿</div></td>
+    return`<tr class="${RC[r.c]||''}" id="w-row-${r.id}" draggable="false" ondragstart="wDrag.start(event,${r.id})" ondragover="wDrag.over(event,${r.id})" ondragleave="wDrag.leave(event,${r.id})" ondrop="wDrag.drop(event,${r.id})" ondragend="wDrag.end()">
+      <td class="w-col-drag"><div class="wdrag-handle" onmousedown="this.closest('tr').draggable=true" onmouseup="this.closest('tr').draggable=false">⠿</div></td>
       <td class="w-col-dot"><div class="wdot-wrap"><div class="dot-btn ${DC[r.c]}" id="w-dot-${r.id}" onclick="showPicker(this,c=>{W.find(x=>x.id===${r.id}).c=c;wSave();wDraw()})"></div></div></td>
       ${cells}
       <td class="w-col-del"><button class="wbtn-del" onclick="wDel(${r.id})">✕</button></td>
@@ -650,8 +650,8 @@ function fDraw(){
       ?`<a href="${xe(r.link)}" target="_blank" rel="noopener">${xe(r.link.length>60?r.link.slice(0,60)+'…':r.link)}</a>${r.note?`<div class="link-note">${xe(r.note)}</div>`:''}`
       :`<span style="color:#d0d0d0">Link...</span>`;
 
-    return`<tr class="${RC[r.c]||''}" id="f-row-${r.id}" draggable="true" ondragstart="fDrag.start(event,${r.id})" ondragover="fDrag.over(event,${r.id})" ondragleave="fDrag.leave(event,${r.id})" ondrop="fDrag.drop(event,${r.id})" ondragend="fDrag.end()">
-      <td class="f-col-drag"><div class="wdrag-handle">⠿</div></td>
+    return`<tr class="${RC[r.c]||''}" id="f-row-${r.id}" draggable="false" ondragstart="fDrag.start(event,${r.id})" ondragover="fDrag.over(event,${r.id})" ondragleave="fDrag.leave(event,${r.id})" ondrop="fDrag.drop(event,${r.id})" ondragend="fDrag.end()">
+      <td class="f-col-drag"><div class="wdrag-handle" onmousedown="this.closest('tr').draggable=true" onmouseup="this.closest('tr').draggable=false">⠿</div></td>
       <td class="f-col-dot"><div class="wdot-wrap"><div class="dot-btn ${DC[r.c]}" id="f-dot-${r.id}" onclick="showPicker(this,c=>{F.find(x=>x.id===${r.id}).c=c;fSave();fDraw()})"></div></div></td>
       ${titleCell}
       <td class="f-col-link"><div class="link-view${r.link?'':' empty'}" ondblclick="openLinkModal(${r.id})">${linkDisplay}</div></td>
